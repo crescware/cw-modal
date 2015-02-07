@@ -1,0 +1,39 @@
+{
+  "name": "cw-modal",
+  "description": "AngularJS modal dialog.",
+  "version": "0.0.1",
+  "author": "Okuno Kentaro",
+  "bugs": {
+    "url": "https://github.com/armorik83/cw-modal/issues"
+  },
+  "devDependencies": {
+    "angular": "1.3.12",
+    "dtsm": "0.4.1",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-espower": "0.10.0",
+    "grunt-mocha-istanbul": "2.3.1",
+    "grunt-ts": "3.0.0",
+    "istanbul": "0.3.5",
+    "load-grunt-tasks": "3.1.0",
+    "mocha": "2.1.0",
+    "power-assert": "0.10.1",
+    "time-grunt": "1.0.0",
+    "typescript": "1.4.1"
+  },
+  "homepage": "https://github.com/armorik83/cw-modal",
+  "keywords": [
+    "AngularJS",
+    "dialog"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://armorik83@github.com/armorik83/cw-modal.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  }
+}
