@@ -1,5 +1,7 @@
 'use strict';
 
+var licensify = require('licensify');
+
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
@@ -9,6 +11,7 @@ module.exports = function(grunt) {
 
     opt: {
       client: {
+        'app': 'example/src',
         'tsMain': 'lib',
         'tsTest': 'test/unit',
         'e2eTest': 'test/e2e',
@@ -19,10 +22,25 @@ module.exports = function(grunt) {
       }
     },
 
+    browserify: {
+      options: {
+        preBundleCB: function (b) {
+          b.plugin(licensify);
+        }
+      },
+      example: {
+        files: {
+          'example/src/bundle.js': ['example/**/*.js']
+        }
+      }
+    },
+
     clean: {
       client: {
         src: [
           './*.js.map',
+          '<%= opt.client.app %>/**/*.js',
+          '<%= opt.client.app %>/**/*.js.map',
           '<%= opt.client.jsMain %>/**/*.js',
           '<%= opt.client.jsMain %>/**/*.js.map'
         ]
@@ -59,12 +77,19 @@ module.exports = function(grunt) {
         compiler: './node_modules/.bin/tsc',
         noImplicitAny: true,
         sourceMap: true,
-        target: 'es5'
+        target: 'es5',
+        noEmitOnError: true
       },
-      clientMain: {
+      app: {
+        src: ['<%= opt.client.app %>/**/*.ts'],
+        options: {
+          module: 'commonjs'
+        }
+      },
+      lib: {
         src: ['<%= opt.client.tsMain %>/**/*.ts'],
         options: {
-          fast: 'never'
+          module: 'commonjs'
         }
       }
     }
@@ -72,7 +97,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('basic', [
     'clean',
-    'ts:clientMain'
+    'ts:lib'
   ]);
 
   grunt.registerTask('test', [
@@ -82,6 +107,8 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('start', [
-    'basic'
+    'basic',
+    'ts:app',
+    'browserify:example'
   ]);
 };
