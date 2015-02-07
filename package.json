@@ -37,6 +37,7 @@
     "url": "https://armorik83@github.com/armorik83/cw-modal.git"
   },
   "scripts": {
+    "dtsm": "dtsm install",
     "start": "grunt start && cd example && http-server",
     "test": "grunt test"
   }
