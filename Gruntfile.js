@@ -82,6 +82,6 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('start', [
-    'basic',
+    'basic'
   ]);
 };
