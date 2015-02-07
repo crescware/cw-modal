@@ -29,22 +29,6 @@ module.exports = function(grunt) {
       }
     },
 
-    ts: {
-      options: {
-        comments: true,
-        compiler: './node_modules/.bin/tsc',
-        noImplicitAny: true,
-        sourceMap: true,
-        target: 'es5'
-      },
-      clientMain: {
-        src: ['<%= opt.client.tsMain %>/**/*.ts'],
-        options: {
-          fast: 'never'
-        }
-      }
-    },
-
     espower: {
       test: {
         files: [
@@ -65,6 +49,22 @@ module.exports = function(grunt) {
         options: {
           mask: '**/*.js',
           reportFormats: ['lcov']
+        }
+      }
+    },
+
+    ts: {
+      options: {
+        comments: true,
+        compiler: './node_modules/.bin/tsc',
+        noImplicitAny: true,
+        sourceMap: true,
+        target: 'es5'
+      },
+      clientMain: {
+        src: ['<%= opt.client.tsMain %>/**/*.ts'],
+        options: {
+          fast: 'never'
         }
       }
     }
