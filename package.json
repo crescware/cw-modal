@@ -17,6 +17,7 @@
     "grunt-espower": "0.10.0",
     "grunt-mocha-istanbul": "2.3.1",
     "grunt-ts": "3.0.0",
+    "http-server": "0.7.4",
     "istanbul": "0.3.5",
     "load-grunt-tasks": "3.1.0",
     "mocha": "2.1.0",
@@ -36,6 +37,7 @@
     "url": "https://armorik83@github.com/armorik83/cw-modal.git"
   },
   "scripts": {
+    "start": "grunt start && cd example && http-server",
     "test": "grunt test"
   }
 }
