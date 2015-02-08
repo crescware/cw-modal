@@ -11,6 +11,9 @@
     "angularjs/angular.d.ts": {
       "ref": "b1f314ebbcd63f5a4c60faab707c7e7032845ada"
     },
+    "angularjs/angular-route.d.ts": {
+      "ref": "b1f314ebbcd63f5a4c60faab707c7e7032845ada"
+    },
     "node/node.d.ts": {
       "ref": "42c8a3b74c05f6887ce21dd63c6234e424f9f8fe"
     }
