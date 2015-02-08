@@ -19,12 +19,12 @@
     "grunt-espower": "0.10.0",
     "grunt-mocha-istanbul": "2.3.1",
     "grunt-ts": "3.0.0",
-    "http-server": "0.7.4",
     "istanbul": "0.3.5",
     "licensify": "1.0.0",
     "load-grunt-tasks": "3.1.0",
     "mocha": "2.1.0",
     "power-assert": "0.10.1",
+    "superstatic": "2.0.2",
     "time-grunt": "1.0.0",
     "typescript": "1.4.1"
   },
@@ -41,7 +41,7 @@
   },
   "scripts": {
     "dtsm": "dtsm install",
-    "start": "grunt start && cd example && http-server",
+    "start": "grunt start && cd example && ss --port 8080 --debug true",
     "test": "grunt test"
   }
 }
