@@ -15,13 +15,16 @@ export var appName = 'cwModalExample';
 export var externalModule = ['ngRoute'];
 angular.module(appName, externalModule);
 
+/**
+ * @constructor
+ */
 function RouteConfig(
   $routeProvider: ng.route.IRouteProvider,
   $locationProvider: ng.ILocationProvider
 ) {
   $locationProvider.html5Mode(true);
   $routeProvider
-    .when('/', {templateUrl: 'src/views/main.html'})
+    .when('/', {template: '<cw-screen-main></cw-screen-main>'})
     .otherwise({redirectTo: '/'});
 }
 RouteConfig.$inject = ['$routeProvider', '$locationProvider'];
