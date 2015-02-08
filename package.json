@@ -7,7 +7,8 @@
     "url": "https://github.com/armorik83/cw-modal/issues"
   },
   "dependencies": {
-    "angular": "1.3.12"
+    "angular": "1.3.12",
+    "angular-route": "1.3.12"
   },
   "devDependencies": {
     "dtsm": "0.4.1",
