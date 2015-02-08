@@ -76,7 +76,7 @@ module.exports = function(grunt) {
         comments: true,
         compiler: './node_modules/.bin/tsc',
         noImplicitAny: true,
-        sourceMap: true,
+        sourceMap: false, // Incompatible with browserify.
         target: 'es5',
         noEmitOnError: true
       },
