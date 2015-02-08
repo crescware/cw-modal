@@ -3,6 +3,9 @@
   "description": "AngularJS modal dialog.",
   "version": "0.0.1",
   "author": "Okuno Kentaro",
+  "browser": {
+    "angular": "./example/lib/angular/angular-index.js"
+  },
   "bugs": {
     "url": "https://github.com/armorik83/cw-modal/issues"
   },

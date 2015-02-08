@@ -27,5 +27,6 @@ typings/
 *.js
 *.js.map
 
+!example/lib/**/*.js
 !Gruntfile.js
 !index.js

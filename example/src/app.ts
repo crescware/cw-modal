@@ -9,11 +9,7 @@
 /// <reference path="../../typings/node/node.d.ts" />
 'use strict';
 
-// Loading angular for global variable.
-// Cannot write as var angular = require('angular');
-// because of overwrite a global variable.
-require('angular');
-require('angular-route');
+var angular = require('angular');
 
 export var appName = 'cwModalExample';
 export var externalModule = ['ngRoute'];
