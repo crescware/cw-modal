@@ -2,7 +2,7 @@
  * cw-modal Sample App
  *
  * @copyright © 2015 Crescware
- * @since cw-modal v 0.0.1 (Feb 7, 2015)
+ * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
 'use strict';
 import angular = require('angular');
