@@ -10,9 +10,11 @@
 'use strict';
 
 var angular = require('angular');
+require('angular-route');
+require('../../lib/cw-modal');
 
 export var appName = 'cwModalExample';
-export var externalModule = ['ngRoute'];
+export var externalModule = ['ngRoute', 'cwModal'];
 angular.module(appName, externalModule);
 
 /**
