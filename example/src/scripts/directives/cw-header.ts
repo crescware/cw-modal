@@ -12,6 +12,7 @@ export var directiveName = 'cwHeader';
 
 function HeaderDDO() {
   return {
+    restrict: 'E',
     templateUrl: 'src/views/cw-header.html'
   }
 }

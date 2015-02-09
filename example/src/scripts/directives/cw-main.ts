@@ -13,6 +13,7 @@ export var directiveName = 'cwMain';
 function MainDDO() {
   return {
     templateUrl: 'src/views/cw-main.html'
+    restrict: 'E',
   }
 }
 

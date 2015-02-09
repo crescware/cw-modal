@@ -12,6 +12,7 @@ export var directiveName = 'cwScreenMain';
 
 function ScreenMainDDO() {
   return {
+    restrict: 'E',
     templateUrl: 'src/views/cw-screen-main.html'
   }
 }
