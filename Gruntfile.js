@@ -26,6 +26,7 @@ module.exports = function(grunt) {
       options: {
         preBundleCB: function (b) {
           b.plugin(licensify);
+          b.transform({global: true}, 'browserify-shim');
         }
       },
       example: {

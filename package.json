@@ -4,16 +4,28 @@
   "version": "0.0.1",
   "author": "Okuno Kentaro",
   "browser": {
-    "angular": "./example/lib/angular/angular-index.js"
+    "jquery": "./node_modules/jquery/dist/jquery.js",
+    "angular": "./node_modules/angular/angular.js"
+  },
+  "browserify-shim": {
+    "jquery": {
+      "exports": "$"
+    },
+    "angular": {
+      "depends": "jquery",
+      "exports": "angular"
+    }
   },
   "bugs": {
     "url": "https://github.com/armorik83/cw-modal/issues"
   },
   "dependencies": {
     "angular": "1.3.12",
-    "angular-route": "1.3.12"
+    "angular-route": "1.3.12",
+    "jquery": "2.1.3"
   },
   "devDependencies": {
+    "browserify-shim": "3.8.2",
     "dtsm": "0.4.1",
     "grunt": "0.4.5",
     "grunt-browserify": "3.3.0",
