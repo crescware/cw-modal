@@ -36,7 +36,7 @@ export module cwModal {
      */
     constructor(
       private $rootScope: ng.IRootScopeService,
-      private $element: JQuery
+      private $element: ng.IAugmentedJQuery,
     ) {
       this.init();
     }
