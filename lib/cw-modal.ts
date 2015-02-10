@@ -33,10 +33,12 @@ export module cwModal {
   class Modal {
     /**
      * @constructor
+     * @ngInject
      */
     constructor(
       private $rootScope: ng.IRootScopeService,
       private $element: ng.IAugmentedJQuery,
+      private $compile: ng.ICompileService
     ) {
       this.init();
     }
@@ -45,11 +47,18 @@ export module cwModal {
      * @returns {void}
      */
     private init() {
-      this.$rootScope.$on('cwModal.Dialog#open', (event, template) => {
-        console.log('cwModal.Dialog#open', template);
-        this.$element.html('');
-        angular.element(template).appendTo(this.$element);
-      });
+      this.$rootScope.$on('cwModal.Dialog#open', this.onOpen.bind(this));
+    }
+
+    /**
+     * @param {ng.IAngularEvent} _ non-use
+     * @param {string} template
+     * @returns {void}
+     */
+    private onOpen(_: ng.IAngularEvent, template: string) {
+      this.$element.html('');
+      angular.element(template).appendTo(this.$element);
+      this.$compile(this.$element.contents())(this.$element.scope());
     }
   }
 
