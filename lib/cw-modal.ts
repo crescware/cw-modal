@@ -57,7 +57,53 @@ export module cwModal {
      */
     private onOpen(_: ng.IAngularEvent, template: string) {
       this.$element.html('');
-      angular.element(template).appendTo(this.$element);
+
+      var modalBackdrop = angular.element('<div></div>');
+      var modalBackdropId = 'cw-modal-backdrop';
+      var modalBackdropZIndex = 1040;
+
+      modalBackdrop.attr('id', modalBackdropId);
+      modalBackdrop.css({
+        'z-index': modalBackdropZIndex,
+        position: 'fixed',
+        top: 0,
+        background: '#333',
+        width: '100%',
+        height: '100%',
+        opacity: 0.5
+      });
+
+      var modalFront = angular.element('<div></div>');
+      var modalFrontId = 'cw-modal-front';
+      var modalFrontZIndex = modalBackdropZIndex + 10;
+
+      modalFront.attr('id', modalFrontId);
+      modalFront.css({
+        'z-index': modalFrontZIndex,
+        position: 'fixed',
+        top: 0,
+        width: '100%',
+        height: '100%',
+        opacity: 1
+      });
+
+      var dialogRect = angular.element('<div></div>');
+      var dialogRectId = 'cw-modal-dialog-rect';
+      var dialogRectZIndex = modalFrontZIndex + 10;
+
+      dialogRect.attr({
+        id: dialogRectId,
+        'class': 'modal-content'
+      });
+      dialogRect.css({
+        'z-index': dialogRectZIndex,
+        width: '900px',
+        margin: '100px auto'
+      });
+
+      this.$element.append(modalBackdrop).append(modalFront);
+      angular.element('#'+modalFrontId).append(dialogRect);
+      angular.element('#'+dialogRectId).append(template);
       this.$compile(this.$element.contents())(this.$element.scope());
     }
   }
