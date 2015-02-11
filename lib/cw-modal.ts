@@ -61,8 +61,10 @@ export module cwModal {
       var modalBackdrop = angular.element('<div></div>');
       var modalBackdropId = 'cw-modal-backdrop';
       var modalBackdropZIndex = 1040;
-
-      modalBackdrop.attr('id', modalBackdropId);
+      
+      modalBackdrop.attr({
+        id: modalBackdropId
+      });
       modalBackdrop.css({
         'z-index': modalBackdropZIndex,
         position: 'fixed',
@@ -77,7 +79,9 @@ export module cwModal {
       var modalFrontId = 'cw-modal-front';
       var modalFrontZIndex = modalBackdropZIndex + 10;
 
-      modalFront.attr('id', modalFrontId);
+      modalFront.attr({
+        id: modalFrontId
+      });
       modalFront.css({
         'z-index': modalFrontZIndex,
         position: 'fixed',
