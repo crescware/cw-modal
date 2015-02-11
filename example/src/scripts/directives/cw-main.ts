@@ -24,7 +24,9 @@ class Main {
    * @returns {void}
    */
   openDialog1() {
-    var dialog = new Dialog('<cw-dialog-dummy></cw-dialog-dummy>');
+    var dialog = new Dialog({
+      template: '<cw-dialog-dummy></cw-dialog-dummy>'
+    });
     dialog.open();
   }
 

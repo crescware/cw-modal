@@ -20,11 +20,17 @@ export module cwModal {
   }
 
   export class Dialog {
+    public template: Promise<string>;
+
     /**
      * @constructor
      */
-    constructor(private template: string) {
-      //
+    constructor(dialogDefinition: any) {
+      if (dialogDefinition.template && dialogDefinition.templateUrl) {
+        console.warn('Cannot specify both "template" and "templateUrl" in the AngularJS. In this case, "template" will be used.')
+        delete dialogDefinition.templateUrl;
+      }
+      this.template = this.extractTemplate(dialogDefinition);
     }
 
     /**
@@ -32,7 +38,38 @@ export module cwModal {
      */
     open() {
       var $rootScope: ng.IRootScopeService = angular.element('.ng-scope').eq(0).scope();
-      $rootScope.$broadcast('cwModal.Dialog#open', this.template);
+      $rootScope.$broadcast('cwModal.Dialog#open', this);
+    }
+
+    /**
+     * @param {*} dialogDefinition
+     * @returns {Promise<string>}
+     */
+    private extractTemplate(dialogDefinition: any): Promise<string> {
+      return new Promise<string>((resolve, reject) => {
+        if (dialogDefinition.templateUrl) {
+          var url = dialogDefinition.templateUrl;
+
+          var $injector: ng.auto.IInjectorService = angular.element('.ng-scope').eq(0).injector();
+          var $templateCache: ng.ITemplateCacheService = $injector.get('$templateCache');
+          var cache = $templateCache.get(url)[1];
+          if (cache) {
+            return resolve(cache);
+          }
+
+          var $http: ng.IHttpService = $injector.get('$http');
+          $http.get(url).success((template: string) => {
+            $templateCache.put(dialogDefinition.templateUrl, template);
+            return resolve(template);
+          });
+          return;
+        }
+        if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
+          return reject();
+        }
+        console.log('dialogDefinition.template');
+        return resolve(dialogDefinition.template);
+      });
     }
   }
 
@@ -58,21 +95,24 @@ export module cwModal {
 
     /**
      * @param {ng.IAngularEvent} _ non-use
-     * @param {string} template
+     * @param {Dialog} dialog
      * @returns {void}
      */
-    private onOpen(_: ng.IAngularEvent, template: string) {
+    private onOpen(_: ng.IAngularEvent, dialog: Dialog) {
       this.$element.html('');
 
-      var modalBackdrop = this.createModalBackdrop();
-      var modalDisplay = this.createModalDisplay(modalBackdrop.zIndex);
-      var dialogRect = this.createDialogRect(modalDisplay.zIndex);
+      var backdrop = this.createModalBackdrop();
+      var display = this.createModalDisplay(backdrop.zIndex);
+      var dialogRect = this.createDialogRect(display.zIndex);
 
-      this.$element.append(modalBackdrop.element).append(modalDisplay.element);
-      angular.element('#'+modalDisplay.id).append(dialogRect.element);
-      angular.element('#'+dialogRect.id).append(template);
-
-      this.$compile(this.$element.contents())(this.$element.scope());
+      dialog.template.then((template: string) => {
+        this.$element.append(backdrop.element).append(display.element);
+        angular.element('#'+display.id).append(dialogRect.element);
+        angular.element('#'+dialogRect.id).append(template);
+        this.$compile(this.$element.contents())(this.$element.scope());
+      }).catch(() => {
+        throw Error('Template not found.');
+      });
     }
 
     /**
