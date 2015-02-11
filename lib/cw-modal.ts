@@ -13,6 +13,12 @@ var angular = this.angular || require('angular');
 export module cwModal {
   var moduleName = 'cwModal';
 
+  interface ModalElement {
+    element: JQuery;
+    id: string;
+    zIndex: number;
+  }
+
   export class Dialog {
     /**
      * @constructor
@@ -58,32 +64,55 @@ export module cwModal {
     private onOpen(_: ng.IAngularEvent, template: string) {
       this.$element.html('');
 
-      var modalBackdrop = angular.element('<div></div>');
-      var modalBackdropId = 'cw-modal-backdrop';
-      var modalBackdropZIndex = 1040;
-      
-      modalBackdrop.attr({
-        id: modalBackdropId
-      });
-      modalBackdrop.css({
-        'z-index': modalBackdropZIndex,
+      var modalBackdrop = this.createModalBackdrop();
+      var modalDisplay = this.createModalDisplay(modalBackdrop.zIndex);
+      var dialogRect = this.createDialogRect(modalDisplay.zIndex);
+
+      this.$element.append(modalBackdrop.element).append(modalDisplay.element);
+      angular.element('#'+modalDisplay.id).append(dialogRect.element);
+      angular.element('#'+dialogRect.id).append(template);
+
+      this.$compile(this.$element.contents())(this.$element.scope());
+    }
+
+    /**
+     * @returns {ModalElement}
+     */
+    private createModalBackdrop(): ModalElement {
+      var element = angular.element('<div></div>');
+      var id = 'cw-modal-backdrop';
+      var zIndex = 1040;
+
+      element.attr({id: id});
+      element.css({
+        'z-index': zIndex,
         position: 'fixed',
         top: 0,
-        background: '#333',
         width: '100%',
         height: '100%',
+        background: '#333',
         opacity: 0.5
       });
 
-      var modalFront = angular.element('<div></div>');
-      var modalFrontId = 'cw-modal-front';
-      var modalFrontZIndex = modalBackdropZIndex + 10;
+      return {
+        element: element,
+        id: id,
+        zIndex: zIndex
+      };
+    }
 
-      modalFront.attr({
-        id: modalFrontId
-      });
-      modalFront.css({
-        'z-index': modalFrontZIndex,
+    /**
+     * @param {number} backZIndex
+     * @returns {ModalElement}
+     */
+    private createModalDisplay(backZIndex: number): ModalElement {
+      var element = angular.element('<div></div>');
+      var id = 'cw-modal-front';
+      var zIndex = backZIndex + 10;
+
+      element.attr({id: id});
+      element.css({
+        'z-index': zIndex,
         position: 'fixed',
         top: 0,
         width: '100%',
@@ -91,24 +120,33 @@ export module cwModal {
         opacity: 1
       });
 
-      var dialogRect = angular.element('<div></div>');
-      var dialogRectId = 'cw-modal-dialog-rect';
-      var dialogRectZIndex = modalFrontZIndex + 10;
+      return {
+        element: element,
+        id: id,
+        zIndex: zIndex
+      };
+    }
 
-      dialogRect.attr({
-        id: dialogRectId,
+    private createDialogRect(backZIndex: number): ModalElement {
+      var element = angular.element('<div></div>');
+      var id = 'cw-modal-dialog-rect';
+      var zIndex = backZIndex + 10;
+
+      element.attr({
+        id: id,
         'class': 'modal-content'
       });
-      dialogRect.css({
-        'z-index': dialogRectZIndex,
+      element.css({
+        'z-index': zIndex,
         width: '900px',
         margin: '100px auto'
       });
 
-      this.$element.append(modalBackdrop).append(modalFront);
-      angular.element('#'+modalFrontId).append(dialogRect);
-      angular.element('#'+dialogRectId).append(template);
-      this.$compile(this.$element.contents())(this.$element.scope());
+      return {
+        element: element,
+        id: id,
+        zIndex: zIndex
+      };
     }
   }
 
@@ -118,7 +156,7 @@ export module cwModal {
   export function ModalDDO() {
     return {
       restrict: 'E',
-      template: '<p>Modal!</p>',
+      template: '',
       controller: Modal,
       controllerAs: 'Modal'
     };
