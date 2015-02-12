@@ -20,7 +20,7 @@ export module cwModal {
   }
 
   export class Dialog {
-    public template: Promise<string>;
+    public template: ng.IPromise<string>;
 
     /**
      * @constructor
@@ -43,14 +43,16 @@ export module cwModal {
 
     /**
      * @param {*} dialogDefinition
-     * @returns {Promise<string>}
+     * @returns {ng.IPromise<string>}
      */
-    private extractTemplate(dialogDefinition: any): Promise<string> {
-      return new Promise<string>((resolve, reject) => {
+    private extractTemplate(dialogDefinition: any): ng.IPromise<string> {
+      var $injector: ng.auto.IInjectorService = angular.element('.ng-scope').eq(0).injector();
+      var $q: ng.IQService = $injector.get('$q');
+
+      return new $q<string>((resolve, reject) => {
         if (dialogDefinition.templateUrl) {
           var url = dialogDefinition.templateUrl;
 
-          var $injector: ng.auto.IInjectorService = angular.element('.ng-scope').eq(0).injector();
           var $templateCache: ng.ITemplateCacheService = $injector.get('$templateCache');
           var cache = $templateCache.get(url)[1];
           if (cache) {
@@ -65,9 +67,8 @@ export module cwModal {
           return;
         }
         if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
-          return reject();
+          return reject('Template not found.');
         }
-        console.log('dialogDefinition.template');
         return resolve(dialogDefinition.template);
       });
     }
@@ -110,8 +111,8 @@ export module cwModal {
         angular.element('#'+display.id).append(dialogRect.element);
         angular.element('#'+dialogRect.id).append(template);
         this.$compile(this.$element.contents())(this.$element.scope());
-      }).catch(() => {
-        throw Error('Template not found.');
+      }).catch((err) => {
+        throw Error(err);
       });
     }
 
