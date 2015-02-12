@@ -33,8 +33,10 @@ class Main {
   /**
    * @returns {void}
    */
-  openDialog2() {
-    var dialog = new Dialog('<cw-dialog-add-variable></cw-dialog-add-variable>');
+  openAddVariableDialog1() {
+    var dialog = new Dialog({
+      template: '<cw-dialog-add-variable></cw-dialog-add-variable>'
+    });
     dialog.open();
   }
 }
