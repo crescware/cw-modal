@@ -50,10 +50,10 @@ export module cwModal {
     }
 
     /**
-     * @param {function(event: ng.IAngularEvent, ...args: any[]): any} cb
+     * @param {function} cb
      * @returns {void}
      */
-    onClose(cb: (event: ng.IAngularEvent, ...args: any[]) => any) {
+    onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any) {
       this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
     }
 
@@ -125,13 +125,19 @@ export module cwModal {
       this.$element.append(backdrop.element).append(display.element);
       angular.element('#'+display.id)
         .append(dialogRect.element)
-        .on('click', () => {
+        .on('click', (event: JQueryEventObject) => {
+          event.stopPropagation();
           this.$element.html('');
-          this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', null);
+          this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', event);
         });
 
       dialog.template.then((template: string) => {
-        angular.element('#'+dialogRect.id).append(template);
+        angular.element('#'+dialogRect.id)
+          .append(template)
+          .on('click', (event: JQueryEventObject) => {
+            event.stopPropagation();
+            // do nothing
+          });
         this.$compile(this.$element.contents())(this.$element.scope());
       }).catch((err) => {
         throw Error(err);
