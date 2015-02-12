@@ -148,7 +148,7 @@ export module cwModal {
      */
     private createModalDisplay(backZIndex: number): ModalElement {
       var element = angular.element('<div></div>');
-      var id = 'cw-modal-front';
+      var id = 'cw-modal-display';
       var zIndex = backZIndex + 10;
 
       element.attr({id: id});
