@@ -21,6 +21,9 @@ export module cwModal {
 
   export class Dialog {
     public template: ng.IPromise<string>;
+    public dialogUuid: string;
+
+    private $rootScope: ng.IRootScopeService;
 
     /**
      * @constructor
@@ -31,14 +34,27 @@ export module cwModal {
         delete dialogDefinition.templateUrl;
       }
       this.template = this.extractTemplate(dialogDefinition);
+      this.dialogUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+      });
+      this.$rootScope = angular.element('.ng-scope').eq(0).scope();
     }
 
     /**
+     * @returns {string}
+     */
+    open(): string {
+      this.$rootScope.$broadcast('cwModal.Dialog#open', this);
+      return this.dialogUuid;
+    }
+
+    /**
+     * @param {function(event: ng.IAngularEvent, ...args: any[]): any} cb
      * @returns {void}
      */
-    open() {
-      var $rootScope: ng.IRootScopeService = angular.element('.ng-scope').eq(0).scope();
-      $rootScope.$broadcast('cwModal.Dialog#open', this);
+    onClose(cb: (event: ng.IAngularEvent, ...args: any[]) => any) {
+      this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
     }
 
     /**
@@ -106,9 +122,15 @@ export module cwModal {
       var display = this.createModalDisplay(backdrop.zIndex);
       var dialogRect = this.createDialogRect(display.zIndex);
 
+      this.$element.append(backdrop.element).append(display.element);
+      angular.element('#'+display.id)
+        .append(dialogRect.element)
+        .on('click', () => {
+          this.$element.html('');
+          this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', null);
+        });
+
       dialog.template.then((template: string) => {
-        this.$element.append(backdrop.element).append(display.element);
-        angular.element('#'+display.id).append(dialogRect.element);
         angular.element('#'+dialogRect.id).append(template);
         this.$compile(this.$element.contents())(this.$element.scope());
       }).catch((err) => {
