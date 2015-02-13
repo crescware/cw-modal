@@ -107,6 +107,19 @@ module.exports = function(grunt) {
       }
     },
 
+    ngAnnotate: {
+      options: {
+        singleQuotes: true
+      },
+      client: {
+        expand: true,
+        src: [
+          './<%= opt.client.app %>/**/*.js',
+          './<%= opt.client.jsMain %>/**/*.js'
+        ]
+      }
+    },
+
     ts: {
       options: {
         comments: true,
@@ -145,6 +158,7 @@ module.exports = function(grunt) {
   grunt.registerTask('start', [
     'basic',
     'ts:app',
+    'ngAnnotate',
     'browserify:example'
   ]);
 
