@@ -7,8 +7,8 @@
 'use strict';
 import angular = require('angular');
 import cw = require('../../app');
-import cwm = require('../../../../lib/dialog');
-import Dialog = cwm.cwModal.Dialog;
+
+var Dialog = require('../../../../lib/dialog').Dialog;
 
 export var directiveName = 'cwMain';
 
