@@ -133,6 +133,10 @@ class Modal {
     };
   }
 
+  /**
+   * @param {number} backZIndex
+   * @returns {ModalElement}
+   */
   private createDialogRect(backZIndex: number): ModalElement {
     var element = angular.element('<div></div>');
     var id = 'cw-modal-dialog-rect';
