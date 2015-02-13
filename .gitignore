@@ -23,10 +23,15 @@ doc/
 test-espowered/
 typings/
 
+# for testium
+**/es5/
+test/log/
+
 # TypeScript
 *.js
 *.js.map
 
 !example/lib/**/*.js
+!test/**/*.js
 !Gruntfile.js
 !index.js
