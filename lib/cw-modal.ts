@@ -90,13 +90,17 @@ export module cwModal {
     }
   }
 
+  interface ModalControllerScope extends ng.IScope {
+    dialog: Dialog;
+  }
+
   class Modal {
     /**
      * @constructor
      * @ngInject
      */
     constructor(
-      private $rootScope: ng.IRootScopeService,
+      private $scope: ModalControllerScope,
       private $element: ng.IAugmentedJQuery,
       private $compile: ng.ICompileService
     ) {
@@ -107,7 +111,7 @@ export module cwModal {
      * @returns {void}
      */
     private init() {
-      this.$rootScope.$on('cwModal.Dialog#open', this.onOpen.bind(this));
+      this.$scope.$on('cwModal.Dialog#open', this.onOpen.bind(this));
     }
 
     /**
@@ -116,6 +120,7 @@ export module cwModal {
      * @returns {void}
      */
     private onOpen(_: ng.IAngularEvent, dialog: Dialog) {
+      this.$scope.dialog = dialog;
       this.$element.html('');
 
       var backdrop = this.createModalBackdrop();
@@ -128,7 +133,8 @@ export module cwModal {
         .on('click', (event: JQueryEventObject) => {
           event.stopPropagation();
           this.$element.html('');
-          this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', event);
+          delete this.$scope.dialog;
+          this.$scope.$broadcast(dialog.dialogUuid + '.onClose', event);
         });
 
       dialog.template.then((template: string) => {
@@ -227,7 +233,8 @@ export module cwModal {
       restrict: 'E',
       template: '',
       controller: Modal,
-      controllerAs: 'Modal'
+      controllerAs: 'Modal',
+      scope: {}
     };
   }
 
