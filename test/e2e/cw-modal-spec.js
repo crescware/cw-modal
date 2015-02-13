@@ -1,3 +1,9 @@
+/**
+ * cw-modal Tests
+ *
+ * @copyright © 2015 Crescware
+ * @since cw-modal v 0.0.1 (Feb 12, 2015)
+ */
 "use strict";
 
 var injectBrowser = require('testium/mocha');
