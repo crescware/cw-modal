@@ -46,22 +46,6 @@ class Dialog {
   }
 
   /**
-   * @returns {string}
-   */
-  open(): string {
-    this.$rootScope.$broadcast('cwModal.Dialog#open', this);
-    return this.dialogUuid;
-  }
-
-  /**
-   * @param {function} cb
-   * @returns {void}
-   */
-  onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any) {
-    this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
-  }
-
-  /**
    * @param {*} dialogDefinition
    * @returns {ng.IPromise<string>}
    */
@@ -91,6 +75,22 @@ class Dialog {
       }
       return resolve(dialogDefinition.template);
     });
+  }
+
+  /**
+   * @returns {string}
+   */
+  open(): string {
+    this.$rootScope.$broadcast('cwModal.Dialog#open', this);
+    return this.dialogUuid;
+  }
+
+  /**
+   * @param {function} cb
+   * @returns {void}
+   */
+  onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any) {
+    this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
   }
 }
 
