@@ -22,6 +22,22 @@ module.exports = function(grunt) {
       }
     },
 
+    '6to5': {
+      options: {
+        sourceMap: true
+      },
+      e2e: {
+        files: [
+          {
+            expand: true,
+            cwd: '<%= opt.client.e2eTest %>/',
+            src: ['**/*-spec.js'],
+            dest: '<%= opt.client.e2eTest %>/es5/'
+          }
+        ]
+      }
+    },
+
     browserify: {
       options: {
         preBundleCB: function (b) {
@@ -43,7 +59,8 @@ module.exports = function(grunt) {
           '<%= opt.client.app %>/**/*.js',
           '<%= opt.client.app %>/**/*.js.map',
           '<%= opt.client.jsMain %>/**/*.js',
-          '<%= opt.client.jsMain %>/**/*.js.map'
+          '<%= opt.client.jsMain %>/**/*.js.map',
+          '<%= opt.client.e2eTest %>/es5'
         ]
       }
     },
@@ -59,12 +76,30 @@ module.exports = function(grunt) {
             ext: '.js'
           }
         ]
+      },
+      e2e: {
+        files: [
+          {
+            expand: true,
+            cwd: '<%= opt.client.e2eTest %>/es5/',
+            src: ['**/*.js'],
+            dest: '<%= opt.client.e2eTestEspowerd %>',
+            ext: '.js'
+          }
+        ]
       }
     },
 
     mocha_istanbul: {
-      main: {
+      test: {
         src: '<%= opt.client.jsTestEspowerd %>/**/*.js',
+        options: {
+          mask: '**/*.js',
+          reportFormats: ['lcov']
+        }
+      },
+      e2e: {
+        src: '<%= opt.client.e2eTestEspowerd %>/**/*.js',
         options: {
           mask: '**/*.js',
           reportFormats: ['lcov']
@@ -103,13 +138,20 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', [
     'basic',
-    'espower',
-    'mocha_istanbul'
+    'espower:test',
+    'mocha_istanbul:test'
   ]);
 
   grunt.registerTask('start', [
     'basic',
     'ts:app',
     'browserify:example'
+  ]);
+
+  grunt.registerTask('e2e', [
+    'start',
+    '6to5',
+    'espower:e2e',
+    'mocha_istanbul:e2e'
   ]);
 };

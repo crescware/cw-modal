@@ -1,0 +1,11 @@
+; defaults to false, `npm start`s the app
+launch = false
+
+[app]
+port = 8080
+
+[mocha]
+; defaults to 20 seconds
+timeout = 10000
+; defaults to 2 seconds
+slow = 2500
