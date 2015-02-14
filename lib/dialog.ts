@@ -15,6 +15,7 @@ export interface DialogInstance {
   template: ng.IPromise<string>;
   dialogUuid: string;
   open(): string;
+  close(event?: JQueryEventObject): void;
   onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any): void;
 }
 
@@ -83,6 +84,14 @@ class Dialog {
   open(): string {
     this.$rootScope.$broadcast('cwModal.Dialog#open', this);
     return this.dialogUuid;
+  }
+
+  /**
+   * @param {JQueryEventObject} [event]
+   * @returns {void}
+   */
+  close(event?: JQueryEventObject) {
+    this.$rootScope.$broadcast('cwModal.Dialog#close', event, this);
   }
 
   /**

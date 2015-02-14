@@ -20,18 +20,20 @@ interface ModalElement {
   zIndex: number;
 }
 
-interface ModalControllerScope extends ng.IScope {
+export interface ModalProperty {
   dialog: Dialog;
 }
 
 class Modal {
-  public static moduleName = 'cwModal';
+  static moduleName = 'cwModal';
+  dialog: Dialog;
+
   /**
    * @constructor
    * @ngInject
    */
   constructor(
-    private $scope: ModalControllerScope,
+    private $rootScope: ng.IRootScopeService,
     private $element: ng.IAugmentedJQuery,
     private $compile: ng.ICompileService
   ) {
@@ -42,7 +44,8 @@ class Modal {
    * @returns {void}
    */
   private init() {
-    this.$scope.$on('cwModal.Dialog#open', this.onOpen.bind(this));
+    this.$rootScope.$on('cwModal.Dialog#open',  this.onOpen.bind(this));
+    this.$rootScope.$on('cwModal.Dialog#close', this.onClose.bind(this));
   }
 
   /**
@@ -51,7 +54,7 @@ class Modal {
    * @returns {void}
    */
   private onOpen(_: ng.IAngularEvent, dialog: Dialog) {
-    this.$scope.dialog = dialog;
+    this.dialog = dialog;
     this.$element.html('');
 
     var backdrop = this.createModalBackdrop();
@@ -63,22 +66,32 @@ class Modal {
       .append(dialogRect.element)
       .on('click', (event: JQueryEventObject) => {
         event.stopPropagation();
-        this.$element.html('');
-        delete this.$scope.dialog;
-        this.$scope.$broadcast(dialog.dialogUuid + '.onClose', event);
+        dialog.close(event);
       });
 
     dialog.template.then((template: string) => {
+      var templateEl = angular.element(template);
       angular.element('#'+dialogRect.id)
         .append(template)
         .on('click', (event: JQueryEventObject) => {
           event.stopPropagation();
-          // do nothing
         });
       this.$compile(this.$element.contents())(this.$element.scope());
     }).catch((err: string) => {
       throw Error(err);
     });
+  }
+
+  /**
+   * @param {ng.IAngularEvent} _ non-use
+   * @param {JQueryEventObject} jQueryEvent
+   * @param {Dialog} dialog
+   * @returns {void}
+   */
+  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: Dialog) {
+    this.$element.html('');
+    this.dialog = null;
+    this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
   }
 
   /**
