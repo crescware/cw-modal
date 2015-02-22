@@ -68,10 +68,11 @@
     "test": "grunt test"
   },
   "files": [
-    "README.md",
+    "dist",
     "index.js",
-    "package.json",
     "lib",
+    "package.json",
+    "README.md",
     "test"
   ]
 }
