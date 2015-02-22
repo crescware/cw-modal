@@ -18,7 +18,8 @@ module.exports = function(grunt) {
         'jsMain': 'lib',
         'jsTest': 'test/unit',
         'jsTestEspowerd': 'test-espowered/unit',
-        'e2eTestEspowerd': 'test-espowered/e2e'
+        'e2eTestEspowerd': 'test-espowered/e2e',
+        'dist': 'dist'
       }
     },
 
@@ -65,7 +66,8 @@ module.exports = function(grunt) {
           '<%= opt.client.app %>/**/*.js.map',
           '<%= opt.client.jsMain %>/**/*.js',
           '<%= opt.client.jsMain %>/**/*.js.map',
-          '<%= opt.client.e2eTest %>/es5'
+          '<%= opt.client.e2eTest %>/es5',
+          '<%= opt.client.dist %>/'
         ]
       }
     },
@@ -76,7 +78,15 @@ module.exports = function(grunt) {
           'lib/cw-modal.js',
           'lib/dialog.js'
         ],
-        dest: 'index.js'
+        dest: 'dist/bundle.js'
+      }
+    },
+
+    copy: {
+      dist: {
+        files: [
+          {expand: true, cwd: 'lib/', src: ['**/*.js'], dest: 'dist/'}
+        ]
       }
     },
 
@@ -186,8 +196,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'basic',
-    'ts:app',
     'ngAnnotate',
-    'concat'
+    'concat',
+    'copy'
   ]);
 };

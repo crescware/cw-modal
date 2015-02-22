@@ -35,3 +35,4 @@ test/log/
 !test/**/*.js
 !Gruntfile.js
 !index.js
+!dist/*

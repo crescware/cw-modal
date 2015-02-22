@@ -1,0 +1,82 @@
+/**
+ * cw-modal
+ *
+ * @copyright © 2015 Crescware
+ * @since cw-modal v 0.0.1 (Feb 8, 2015)
+ */
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/angularjs/angular.d.ts" />
+'use strict';
+var angular = this.angular || require('angular');
+var Modal = this.Modal || require('./cw-modal').Modal;
+var Dialog = (function () {
+    /**
+     * @constructor
+     */
+    function Dialog(dialogDefinition) {
+        if (dialogDefinition.template && dialogDefinition.templateUrl) {
+            console.warn('Cannot specify both "template" and "templateUrl" in the AngularJS. In this case, "template" will be used.');
+            delete dialogDefinition.templateUrl;
+        }
+        // Priority
+        this.rootElement = angular.element('.ng-scope').eq(0);
+        this.$rootScope = this.rootElement.scope();
+        this.template = this.extractTemplate(dialogDefinition);
+        this.dialogUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+    /**
+     * @param {*} dialogDefinition
+     * @returns {ng.IPromise<string>}
+     */
+    Dialog.prototype.extractTemplate = function (dialogDefinition) {
+        var $injector = this.rootElement.injector();
+        var $q = $injector.get('$q');
+        return new $q(function (resolve, reject) {
+            if (dialogDefinition.templateUrl) {
+                var url = dialogDefinition.templateUrl;
+                var $templateCache = $injector.get('$templateCache');
+                var cache = $templateCache.get(url)[1];
+                if (cache) {
+                    return resolve(cache);
+                }
+                var $http = $injector.get('$http');
+                $http.get(url).success(function (template) {
+                    $templateCache.put(dialogDefinition.templateUrl, template);
+                    return resolve(template);
+                });
+                return;
+            }
+            if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
+                return reject('Template not found.');
+            }
+            return resolve(dialogDefinition.template);
+        });
+    };
+    /**
+     * @returns {string}
+     */
+    Dialog.prototype.open = function () {
+        this.$rootScope.$broadcast('cwModal.Dialog#open', this);
+        return this.dialogUuid;
+    };
+    /**
+     * @param {JQueryEventObject} [event]
+     * @returns {void}
+     */
+    Dialog.prototype.close = function (event) {
+        this.$rootScope.$broadcast('cwModal.Dialog#close', event, this);
+    };
+    /**
+     * @param {function} cb
+     * @returns {void}
+     */
+    Dialog.prototype.onClose = function (cb) {
+        this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
+    };
+    return Dialog;
+})();
+angular.module(Modal.moduleName).factory('Dialog', function () { return Dialog; });
+this.Dialog = Dialog;
