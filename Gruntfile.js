@@ -49,6 +49,11 @@ module.exports = function(grunt) {
         files: {
           'example/src/bundle.js': ['example/**/*.js']
         }
+      },
+      lib: {
+        files: {
+          'lib/bundle.js': ['lib/**/*.js']
+        }
       }
     },
 
@@ -62,6 +67,16 @@ module.exports = function(grunt) {
           '<%= opt.client.jsMain %>/**/*.js.map',
           '<%= opt.client.e2eTest %>/es5'
         ]
+      }
+    },
+
+    concat: {
+      dist: {
+        src: [
+          'lib/cw-modal.js',
+          'lib/dialog.js'
+        ],
+        dest: 'index.js'
       }
     },
 
@@ -167,5 +182,12 @@ module.exports = function(grunt) {
     '6to5',
     'espower:e2e',
     'mocha_istanbul:e2e'
+  ]);
+
+  grunt.registerTask('build', [
+    'basic',
+    'ts:app',
+    'ngAnnotate',
+    'concat'
   ]);
 };
