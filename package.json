@@ -66,13 +66,5 @@
     "e2e": "grunt e2e",
     "start": "grunt start && cd example && ss --port 8080 --debug true",
     "test": "grunt test"
-  },
-  "files": [
-    "dist",
-    "index.js",
-    "lib",
-    "package.json",
-    "README.md",
-    "test"
-  ]
+  }
 }
