@@ -10,6 +10,14 @@ declare module cw {
     dialog: DialogInstance;
   }
 
+  export interface DialogDefinition {
+    template?: string;
+  }
+
+  export interface DialogStatic {
+    new(definition: DialogDefinition): cw.DialogInstance;
+  }
+
   export interface DialogInstance {
     template: ng.IPromise<string>;
     dialogUuid: string;
