@@ -9,7 +9,7 @@
 'use strict';
 
 var angular: ng.IAngularStatic = this.angular || require('angular');
-var Modal = this.Modal || require('./cw-modal').Modal;
+var Modal = this.Modal || require('./modal').Modal;
 
 class Dialog {
   public template: ng.IPromise<string>;
