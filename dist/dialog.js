@@ -8,7 +8,7 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
 'use strict';
 var angular = this.angular || require('angular');
-var Modal = this.Modal || require('./cw-modal').Modal;
+var Modal = this.Modal || require('./modal').Modal;
 var Dialog = (function () {
     /**
      * @constructor
