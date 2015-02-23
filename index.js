@@ -1,2 +1,2 @@
-module.exports.Modal = require('dist/cw-modal');
-module.exports.Dialog = require('dist/dialog');
+module.exports.Modal = require('./dist/cw-modal');
+module.exports.Dialog = require('./dist/dialog');
