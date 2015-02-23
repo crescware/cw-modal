@@ -6,11 +6,12 @@
  */
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../api/cw-modal.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
 
-import iDialog = require('./dialog');
-import Dialog = iDialog.DialogInstance;
+import importCwModal = require('cw-modal');
+import cw = importCwModal;
 
 var angular: ng.IAngularStatic = this.angular || require('angular');
 
@@ -20,13 +21,9 @@ interface ModalElement {
   zIndex: number;
 }
 
-export interface ModalProperty {
-  dialog: Dialog;
-}
-
 class Modal {
   static moduleName = 'cwModal';
-  dialog: Dialog;
+  dialog: cw.DialogInstance;
 
   /**
    * @constructor
@@ -50,10 +47,10 @@ class Modal {
 
   /**
    * @param {ng.IAngularEvent} _ non-use
-   * @param {Dialog} dialog
+   * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onOpen(_: ng.IAngularEvent, dialog: Dialog) {
+  private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance) {
     this.dialog = dialog;
     this.$element.html('');
 
@@ -85,10 +82,10 @@ class Modal {
   /**
    * @param {ng.IAngularEvent} _ non-use
    * @param {JQueryEventObject} jQueryEvent
-   * @param {Dialog} dialog
+   * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: Dialog) {
+  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance) {
     this.$element.html('');
     this.dialog = null;
     this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);

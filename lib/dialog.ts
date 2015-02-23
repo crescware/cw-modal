@@ -11,14 +11,6 @@
 var angular: ng.IAngularStatic = this.angular || require('angular');
 var Modal = this.Modal || require('./cw-modal').Modal;
 
-export interface DialogInstance {
-  template: ng.IPromise<string>;
-  dialogUuid: string;
-  open(): string;
-  close(event?: JQueryEventObject): void;
-  onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any): void;
-}
-
 class Dialog {
   public template: ng.IPromise<string>;
   public dialogUuid: string;
