@@ -6,6 +6,7 @@
  */
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../api/cw-modal.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
 var angular = this.angular || require('angular');
@@ -30,7 +31,7 @@ var Modal = (function () {
     };
     /**
      * @param {ng.IAngularEvent} _ non-use
-     * @param {Dialog} dialog
+     * @param {cw.DialogInstance} dialog
      * @returns {void}
      */
     Modal.prototype.onOpen = function (_, dialog) {
@@ -58,7 +59,7 @@ var Modal = (function () {
     /**
      * @param {ng.IAngularEvent} _ non-use
      * @param {JQueryEventObject} jQueryEvent
-     * @param {Dialog} dialog
+     * @param {cw.DialogInstance} dialog
      * @returns {void}
      */
     Modal.prototype.onClose = function (_, jQueryEvent, dialog) {
