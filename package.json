@@ -3,19 +3,6 @@
   "description": "AngularJS modal dialog.",
   "version": "0.0.1",
   "author": "Okuno Kentaro",
-  "browser": {
-    "jquery": "./node_modules/jquery/dist/jquery.js",
-    "angular": "./node_modules/angular/angular.js"
-  },
-  "browserify-shim": {
-    "jquery": {
-      "exports": "$"
-    },
-    "angular": {
-      "depends": "jquery",
-      "exports": "angular"
-    }
-  },
   "bugs": {
     "url": "https://github.com/armorik83/cw-modal/issues"
   },

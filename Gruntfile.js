@@ -1,10 +1,42 @@
 'use strict';
 
+var fs = require('fs');
 var licensify = require('licensify');
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
+
+  var browserifyConfig = {
+    browser: {
+      jquery: './node_modules/jquery/dist/jquery.js',
+      angular: './node_modules/angular/angular.js'
+    },
+    'browserify-shim': {
+      jquery: {
+        exports: '$'
+      },
+      angular: {
+        depends: 'jquery',
+        exports: 'angular'
+      }
+    }
+  };
+
+  function extend(a, b){
+    for(var key in b) {
+      if(b.hasOwnProperty(key)) { a[key] = b[key]; }
+    }
+    return a;
+  }
+  var packageJson = require('./package.json');
+  var rawPackageJson = JSON.stringify(packageJson, null, '  ');
+  var merged = extend(packageJson, browserifyConfig);
+  fs.writeFileSync('package.json', JSON.stringify(merged, null, '  '));
+
+  grunt.registerTask('restorePackage', 'Restoring package.json', function() {
+    fs.writeFileSync('package.json', rawPackageJson);
+  });
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -169,35 +201,35 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('basic', [
+  var taskBasic = [
     'clean',
     'ts:lib'
-  ]);
+  ];
 
-  grunt.registerTask('test', [
-    'basic',
+  var taskTest = taskBasic.concat([
     'espower:test',
     'mocha_istanbul:test'
   ]);
+  grunt.registerTask('test', taskTest.concat(['restorePackage']));
 
-  grunt.registerTask('start', [
-    'basic',
+  var taskStart = taskBasic.concat([
     'ts:app',
     'ngAnnotate',
     'browserify:example'
   ]);
+  grunt.registerTask('start', taskStart.concat(['restorePackage']));
 
-  grunt.registerTask('e2e', [
-    'start',
+  var taskE2e = taskStart.concat([
     'babel',
     'espower:e2e',
     'mocha_istanbul:e2e'
   ]);
+  grunt.registerTask('e2e', taskE2e.concat(['restorePackage']));
 
-  grunt.registerTask('build', [
-    'basic',
+  var taskBuild = taskBasic.concat([
     'ngAnnotate',
     'concat',
     'copy'
   ]);
+  grunt.registerTask('build', taskBuild.concat(['restorePackage']));
 };
