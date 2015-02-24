@@ -7,17 +7,13 @@
 'use strict';
 
 import angular = require('angular');
-import cw = require('../../app');
-
-import iDialog = require('../../../../lib/dialog');
-import Dialog = iDialog.DialogInstance;
-import iModal = require('../../../../lib/cw-modal');
-import Modal = iModal.ModalProperty;
+import app = require('../../app');
+import cwModal = require('cw-modal');
 
 export var directiveName = 'cwDialogDummy';
 
 interface DialogDummyControllerScope extends ng.IScope {
-  dialog: Dialog;
+  dialog: cwModal.DialogInstance;
 }
 
 class DialogDummyController {
@@ -41,7 +37,7 @@ function DialogDummyDDO() {
     restrict: 'E',
     templateUrl: 'src/views/cw-dialog-dummy.html',
     require: '^cwModal',
-    link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: Modal) => {
+    link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: cwModal.ModalProperty) => {
       $scope.dialog = cwModal.dialog;
     },
     controller: DialogDummyController,
@@ -50,4 +46,4 @@ function DialogDummyDDO() {
   }
 }
 
-angular.module(cw.appName).directive(directiveName, DialogDummyDDO);
+angular.module(app.appName).directive(directiveName, DialogDummyDDO);

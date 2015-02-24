@@ -7,11 +7,12 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../../api/cw-modal.d.ts" />
 'use strict';
 
 var angular = require('angular');
 require('angular-route');
-require('../../lib/cw-modal');
+require('../../lib/modal');
 
 export var appName = 'cwModalExample';
 export var externalModule = ['ngRoute', 'cwModal'];
