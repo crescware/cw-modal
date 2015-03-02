@@ -12,6 +12,7 @@ var angular: ng.IAngularStatic = this.angular || require('angular');
 var Modal = this.Modal || require('./modal').Modal;
 
 class Dialog {
+  public data: any;
   public template: ng.IPromise<string>;
   public dialogUuid: string;
 
@@ -71,9 +72,11 @@ class Dialog {
   }
 
   /**
+   * @param {*} data - Any data you want to use in the dialog
    * @returns {string}
    */
-  open(): string {
+  open(data: any): string {
+    this.data = data;
     this.$rootScope.$broadcast('cwModal.Dialog#open', this);
     return this.dialogUuid;
   }

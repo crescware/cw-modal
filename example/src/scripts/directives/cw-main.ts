@@ -30,7 +30,10 @@ class Main {
     dialog.onClose(() => {
       console.log('#openDialog1().onClose()');
     });
-    dialog.open();
+    dialog.open({
+      key1: 'foofoo',
+      key2: 'barbar'
+    });
   }
 
   /**

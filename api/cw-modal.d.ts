@@ -6,8 +6,8 @@
  */
 
 declare module cw {
-  export interface ModalProperty {
-    dialog: DialogInstance;
+  export interface ModalProperty<T> {
+    dialog: DialogInstance<T>;
   }
 
   export interface DialogDefinition {
@@ -15,13 +15,15 @@ declare module cw {
   }
 
   export interface DialogStatic {
-    new(definition: DialogDefinition): cw.DialogInstance;
+    new(definition: DialogDefinition): cw.DialogInstance<any>;
+    new<T>(definition: DialogDefinition): cw.DialogInstance<T>;
   }
 
-  export interface DialogInstance {
+  export interface DialogInstance<T> {
     template: ng.IPromise<string>;
     dialogUuid: string;
-    open(): string;
+    data: T;
+    open(data: T): string;
     close(event?: JQueryEventObject): void;
     onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any): void;
   }

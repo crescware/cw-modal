@@ -56,9 +56,11 @@ var Dialog = (function () {
         });
     };
     /**
+     * @param {*} data - Any data you want to use in the dialog
      * @returns {string}
      */
-    Dialog.prototype.open = function () {
+    Dialog.prototype.open = function (data) {
+        this.data = data;
         this.$rootScope.$broadcast('cwModal.Dialog#open', this);
         return this.dialogUuid;
     };

@@ -23,7 +23,7 @@ interface ModalElement {
 
 class Modal {
   static moduleName = 'cwModal';
-  dialog: cw.DialogInstance;
+  dialog: cw.DialogInstance<any>;
 
   /**
    * @constructor
@@ -50,7 +50,7 @@ class Modal {
    * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance) {
+  private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance<any>) {
     this.dialog = dialog;
     this.$element.html('');
 
@@ -85,7 +85,7 @@ class Modal {
    * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance) {
+  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance<any>) {
     this.$element.html('');
     this.dialog = null;
     this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);

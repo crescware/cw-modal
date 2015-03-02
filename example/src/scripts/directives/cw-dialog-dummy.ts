@@ -13,7 +13,7 @@ import cwModal = require('cw-modal');
 export var directiveName = 'cwDialogDummy';
 
 interface DialogDummyControllerScope extends ng.IScope {
-  dialog: cwModal.DialogInstance;
+  dialog: cwModal.DialogInstance<{key1: string; key2: string}>;
 }
 
 class DialogDummyController {
@@ -37,7 +37,7 @@ function DialogDummyDDO() {
     restrict: 'E',
     templateUrl: 'src/views/cw-dialog-dummy.html',
     require: '^cwModal',
-    link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: cwModal.ModalProperty) => {
+    link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: cwModal.ModalProperty<{key1: string; key2: string}>) => {
       $scope.dialog = cwModal.dialog;
     },
     controller: DialogDummyController,
