@@ -12,9 +12,10 @@ var angular: ng.IAngularStatic = this.angular || require('angular');
 var Modal = this.Modal || require('./modal').Modal;
 
 class Dialog {
-  public data: any;
-  public template: ng.IPromise<string>;
-  public dialogUuid: string;
+  data: any;
+  template: ng.IPromise<string>;
+  width: number;
+  dialogUuid: string;
 
   private rootElement: ng.IAugmentedJQuery;
   private $rootScope: ng.IRootScopeService;
@@ -33,6 +34,7 @@ class Dialog {
     this.$rootScope = this.rootElement.scope();
 
     this.template = this.extractTemplate(dialogDefinition);
+    this.width = dialogDefinition.width;
     this.dialogUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);

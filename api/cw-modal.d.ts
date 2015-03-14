@@ -12,6 +12,7 @@ declare module cw {
 
   export interface DialogDefinition {
     template?: string;
+    width?: number;
   }
 
   export interface DialogStatic {
@@ -21,6 +22,7 @@ declare module cw {
 
   export interface DialogInstance<T> {
     template: ng.IPromise<string>;
+    width?: number;
     dialogUuid: string;
     data: T;
     open(data: T): string;

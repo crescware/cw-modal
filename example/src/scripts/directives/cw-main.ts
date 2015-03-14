@@ -25,7 +25,8 @@ class Main {
    */
   openDialog1() {
     var dialog = new Dialog({
-      template: '<cw-dialog-dummy></cw-dialog-dummy>'
+      template: '<cw-dialog-dummy></cw-dialog-dummy>',
+      width: 600
     });
     dialog.onClose(() => {
       console.log('#openDialog1().onClose()');
@@ -41,7 +42,8 @@ class Main {
    */
   openAddVariableDialog1() {
     var dialog = new Dialog({
-      template: '<cw-dialog-add-variable></cw-dialog-add-variable>'
+      template: '<cw-dialog-add-variable></cw-dialog-add-variable>',
+      width: 500
     });
     dialog.onClose(() => {
       console.log('#openAddVariableDialog1().onClose()');

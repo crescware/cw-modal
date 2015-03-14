@@ -121,13 +121,14 @@ var Modal = (function () {
         var element = angular.element('<div></div>');
         var id = 'cw-modal-dialog-rect';
         var zIndex = backZIndex + 10;
+        var width = this.dialog.width || 900;
         element.attr({
             id: id,
             'class': 'modal-content'
         });
         element.css({
             'z-index': zIndex,
-            width: '900px',
+            width: width + 'px',
             margin: '100px auto'
         });
         return {
