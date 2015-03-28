@@ -10,15 +10,18 @@ module.exports = function(grunt) {
 
     opt: {
       client: {
-        'app': 'example/src',
+        'app':    'example/src',
         'tsMain': 'lib',
-        'tsTest': 'test/unit',
-        'e2eTest': 'test/e2e',
         'jsMain': 'lib',
-        'jsTest': 'test/unit',
-        'jsTestEspowerd': 'test-espowered/unit',
-        'e2eTestEspowerd': 'test-espowered/e2e',
-        'dist': 'dist'
+        'dist':   'dist'
+      },
+      test: {
+        'e2e':           'test/e2e',
+        'e2eEs5':        'test-es5/e2e',
+        'e2eEspowered':  'test-espowered/e2e',
+        'unit':          'test/unit',
+        'unitEs5':       'test-es5/unit',
+        'unitEspowered': 'test-espowered/unit'
       }
     },
 
@@ -30,9 +33,10 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: '<%= opt.client.e2eTest %>/',
-            src: ['**/*-spec.js'],
-            dest: '<%= opt.client.e2eTest %>/es5/'
+            cwd: '<%= opt.test.e2e %>/',
+            src: ['**/*.es6'],
+            dest: '<%= opt.test.e2eEs5 %>',
+            ext:'.js'
           }
         ]
       }
@@ -64,7 +68,8 @@ module.exports = function(grunt) {
           '<%= opt.client.app %>/**/*.js.map',
           '<%= opt.client.jsMain %>/**/*.js',
           '<%= opt.client.jsMain %>/**/*.js.map',
-          '<%= opt.client.e2eTest %>/es5',
+          '<%= opt.test.e2eEs5 %>/',
+          '<%= opt.test.e2eEspowered %>/',
           '<%= opt.client.dist %>/'
         ]
       }
@@ -83,7 +88,12 @@ module.exports = function(grunt) {
     copy: {
       dist: {
         files: [
-          {expand: true, cwd: 'lib/', src: ['**/*.js'], dest: 'dist/'}
+          {
+            expand: true,
+            cwd: 'lib/',
+            src: ['**/*.js'],
+            dest: 'dist/'
+          }
         ]
       }
     },
@@ -93,9 +103,9 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: '<%= opt.client.jsTest %>/',
+            cwd: '<%= opt.client.unitEs5 %>/',
             src: ['**/*.js'],
-            dest: '<%= opt.client.jsTestEspowerd %>',
+            dest: '<%= opt.test.unitEspowered %>',
             ext: '.js'
           }
         ]
@@ -104,9 +114,9 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: '<%= opt.client.e2eTest %>/es5/',
+            cwd: '<%= opt.test.e2eEs5 %>/',
             src: ['**/*.js'],
-            dest: '<%= opt.client.e2eTestEspowerd %>',
+            dest: '<%= opt.test.e2eEspowered %>',
             ext: '.js'
           }
         ]
@@ -115,14 +125,14 @@ module.exports = function(grunt) {
 
     mocha_istanbul: {
       test: {
-        src: '<%= opt.client.jsTestEspowerd %>/**/*.js',
+        src: '<%= opt.test.unitEspowered %>/**/*.js',
         options: {
           mask: '**/*.js',
           reportFormats: ['lcov']
         }
       },
       e2e: {
-        src: '<%= opt.client.e2eTestEspowerd %>/**/*.js',
+        src: '<%= opt.test.e2eEspowered %>/**/*.js',
         options: {
           mask: '**/*.js',
           reportFormats: ['lcov']
