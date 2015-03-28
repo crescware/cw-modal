@@ -50,7 +50,6 @@ export class Modal {
    * @returns {void}
    */
   private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance<any>) {
-    console.log('onOpen');
     this.dialog = dialog;
     this.$element.html('');
 
@@ -65,7 +64,6 @@ export class Modal {
     jquery('#'+display.id)
       .append(dialogRect.element)
       .on('click', (event: JQueryEventObject) => {
-        console.log('#'+display.id+' click');
         event.stopPropagation();
         dialog.close(event);
       });
