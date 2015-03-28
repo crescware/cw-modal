@@ -6,6 +6,7 @@
  */
 /// <reference path="../api/cw-modal.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/bluebird/bluebird.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
@@ -13,11 +14,16 @@
 import cw = require('cw-modal');
 import angular = require('angular');
 import jquery = require('jquery');
+import Promise = require('bluebird');
 
 interface ModalElement {
   element: JQuery;
   id: string;
   zIndex: number;
+}
+
+interface Scope extends ng.IScope {
+  modalEnable: boolean;
 }
 
 export class Modal {
@@ -31,7 +37,9 @@ export class Modal {
   constructor(
     private $rootScope: ng.IRootScopeService,
     private $element: ng.IAugmentedJQuery,
-    private $compile: ng.ICompileService
+    private $compile: ng.ICompileService,
+    private $scope: Scope,
+    private $timeout: ng.ITimeoutService
   ) {
     this.init();
   }
@@ -40,42 +48,41 @@ export class Modal {
    * @returns {void}
    */
   private init() {
+    this.$scope.modalEnable = false;
     this.$rootScope.$on('cwModal.Dialog#open',  this.onOpen.bind(this));
     this.$rootScope.$on('cwModal.Dialog#close', this.onClose.bind(this));
   }
 
   /**
-   * @param {ng.IAngularEvent} _ non-use
+   * @param {ng.IAngularEvent} _ - event non-use
    * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance<any>) {
+  private onOpen(_: any, dialog: cw.DialogInstance<any>) {
     this.dialog = dialog;
-    this.$element.html('');
 
-    var backdrop = this.createModalBackdrop();
-    var display = this.createModalDisplay(backdrop.zIndex);
-    var dialogRect = this.createDialogRect(display.zIndex);
+    // Loading DOM
+    this.$scope.modalEnable = true;
+    var promise = new Promise((resolve) => {
+      this.$timeout(() => resolve(void 0), 0);
+    });
 
-    this.$element
-      .append(backdrop.element)
-      .append(display.element);
-
-    jquery('#'+display.id)
-      .append(dialogRect.element)
-      .on('click', (event: JQueryEventObject) => {
-        event.stopPropagation();
-        dialog.close(event);
-      });
-
-    dialog.template.then((template: string) => {
-      var templateEl = jquery(template);
-      jquery('#'+dialogRect.id)
-        .append(template)
+    // After load
+    promise.then(() => {
+      jquery('#cw-modal-display')
         .on('click', (event: JQueryEventObject) => {
           event.stopPropagation();
+          this.dialog.close(event);
         });
-      this.$compile(this.$element.contents())(this.$element.scope());
+      return this.dialog.template;
+
+    }).then((template: string) => {
+      jquery('#cw-modal-dialog-rect')
+        .html('')
+        .append(template)
+        .on('click', (event: JQueryEventObject) => event.stopPropagation());
+      this.$compile(jquery('#cw-modal-dialog-rect'))(this.$element.scope());
+
     }).catch((err: string) => {
       throw Error(err);
     });
@@ -88,91 +95,24 @@ export class Modal {
    * @returns {void}
    */
   private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance<any>) {
-    this.$element.html('');
-    this.dialog = null;
-    this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
-  }
-
-  /**
-   * @returns {ModalElement}
-   */
-  private createModalBackdrop(): ModalElement {
-    var element = jquery('<div></div>');
-    var id = 'cw-modal-backdrop';
-    var zIndex = 1040;
-
-    element.attr({id: id});
-    element.css({
-      'z-index': zIndex,
-      position: 'fixed',
-      top: 0,
-      width: '100%',
-      height: '100%',
-      background: '#333',
-      opacity: 0.5
-    });
-
-    return {
-      element: element,
-      id: id,
-      zIndex: zIndex
-    };
-  }
-
-  /**
-   * @param {number} backZIndex
-   * @returns {ModalElement}
-   */
-  private createModalDisplay(backZIndex: number): ModalElement {
-    var element = jquery('<div></div>');
-    var id = 'cw-modal-display';
-    var zIndex = backZIndex + 10;
-
-    element.attr({id: id});
-    element.css({
-      'z-index': zIndex,
-      position: 'fixed',
-      top: 0,
-      width: '100%',
-      height: '100%',
-      opacity: 1
-    });
-
-    return {
-      element: element,
-      id: id,
-      zIndex: zIndex
-    };
-  }
-
-  /**
-   * @param {number} backZIndex
-   * @returns {ModalElement}
-   */
-  private createDialogRect(backZIndex: number): ModalElement {
-    var element = jquery('<div></div>');
-    var id = 'cw-modal-dialog-rect';
-    var zIndex = backZIndex + 10;
-
-    var width = this.dialog.width || 900;
-
-    element.attr({
-      id: id,
-      'class': 'modal-content'
-    });
-    element.css({
-      'z-index': zIndex,
-      width: width + 'px',
-      margin: '100px auto'
-    });
-
-    return {
-      element: element,
-      id: id,
-      zIndex: zIndex
-    };
+    // $timeout is required to apply changes of $scope.modalEnable
+    this.$timeout(() => {
+      jquery('#cw-modal-dialog-rect').html('');
+      this.dialog = null;
+      this.$scope.modalEnable = false;
+      this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
+    }, 0);
   }
 }
+
+var HTML = `
+<div ng-if="modalEnable">
+  <div id="cw-modal-backdrop" style="z-index: 1040; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 0.5; background: rgb(51, 51, 51);"></div>
+  <div id="cw-modal-display" style="z-index: 1050; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 1;">
+    <div id="cw-modal-dialog-rect" class="modal-content" style="z-index: 1060; width: 600px; margin: 100px auto;"></div>
+  </div>
+</div>
+`;
 
 /**
  * @constructor
@@ -183,7 +123,7 @@ function ddo() {
     controllerAs: 'Modal',
     restrict: 'E',
     scope: {},
-    template: ''
+    template: HTML
   };
 }
 
