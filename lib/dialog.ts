@@ -8,11 +8,12 @@
 
 import angular = require('angular');
 import jquery = require('jquery');
+import Promise = require('bluebird');
 import m = require('./modal');
 import Modal = m.Modal;
 
-export class Dialog {
-  data: any;
+export class Dialog<T> {
+  data: T;
   template: ng.IPromise<string>;
   width: number;
   dialogUuid: string;
@@ -43,13 +44,12 @@ export class Dialog {
 
   /**
    * @param {*} dialogDefinition
-   * @returns {ng.IPromise<string>}
+   * @returns {Promise<string>}
    */
-  private extractTemplate(dialogDefinition: any): ng.IPromise<string> {
+  private extractTemplate(dialogDefinition: any): Promise<string> {
     var $injector: ng.auto.IInjectorService = angular.element(this.rootElement).injector();
-    var $q: ng.IQService = $injector.get('$q');
 
-    return new $q<string>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       if (dialogDefinition.templateUrl) {
         var url = dialogDefinition.templateUrl;
 
@@ -60,7 +60,7 @@ export class Dialog {
         }
 
         var $http: ng.IHttpService = $injector.get('$http');
-        $http.get(url).success((template: string) => {
+        $http.get(url).success((template: Promise.Thenable<string>) => {
           $templateCache.put(dialogDefinition.templateUrl, template);
           return resolve(template);
         });
