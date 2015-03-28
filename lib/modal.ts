@@ -173,15 +173,15 @@ export class Modal {
 /**
  * @constructor
  */
-function ModalDDO() {
+function ddo() {
   return {
-    restrict: 'E',
-    template: '',
     controller: Modal,
     controllerAs: 'Modal',
-    scope: {}
+    restrict: 'E',
+    scope: {},
+    template: ''
   };
 }
 
 angular.module(Modal.moduleName, []);
-angular.module(Modal.moduleName).directive(Modal.moduleName, ModalDDO);
+angular.module(Modal.moduleName).directive(Modal.moduleName, ddo);
