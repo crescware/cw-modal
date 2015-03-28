@@ -1,42 +1,9 @@
 'use strict';
-
-var fs = require('fs');
 var licensify = require('licensify');
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
-
-  var browserifyConfig = {
-    browser: {
-      jquery: './node_modules/jquery/dist/jquery.js',
-      angular: './node_modules/angular/angular.js'
-    },
-    'browserify-shim': {
-      jquery: {
-        exports: '$'
-      },
-      angular: {
-        depends: 'jquery',
-        exports: 'angular'
-      }
-    }
-  };
-
-  function extend(a, b){
-    for(var key in b) {
-      if(b.hasOwnProperty(key)) { a[key] = b[key]; }
-    }
-    return a;
-  }
-  var packageJson = require('./package.json');
-  var rawPackageJson = JSON.stringify(packageJson, null, '  ');
-  var merged = extend(packageJson, browserifyConfig);
-  fs.writeFileSync('package.json', JSON.stringify(merged, null, '  '));
-
-  grunt.registerTask('restorePackage', 'Restoring package.json', function() {
-    fs.writeFileSync('package.json', rawPackageJson);
-  });
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -57,7 +24,7 @@ module.exports = function(grunt) {
 
     babel: {
       options: {
-        sourceMap: true
+        sourceMap: false
       },
       e2e: {
         files: [
@@ -75,7 +42,6 @@ module.exports = function(grunt) {
       options: {
         preBundleCB: function (b) {
           b.plugin(licensify, {scanBrowser: true});
-          b.transform({global: true}, 'browserify-shim');
         }
       },
       example: {
@@ -184,19 +150,14 @@ module.exports = function(grunt) {
         noImplicitAny: true,
         sourceMap: false, // Incompatible with browserify.
         target: 'es5',
-        noEmitOnError: true
+        noEmitOnError: true,
+        module: 'commonjs'
       },
       app: {
-        src: ['<%= opt.client.app %>/**/*.ts'],
-        options: {
-          module: 'commonjs'
-        }
+        src: ['<%= opt.client.app %>/**/*.ts']
       },
       lib: {
-        src: ['<%= opt.client.tsMain %>/**/*.ts'],
-        options: {
-          module: 'commonjs'
-        }
+        src: ['<%= opt.client.tsMain %>/**/*.ts']
       }
     }
   });
@@ -210,26 +171,26 @@ module.exports = function(grunt) {
     'espower:test',
     'mocha_istanbul:test'
   ]);
-  grunt.registerTask('test', taskTest.concat(['restorePackage']));
+  grunt.registerTask('test', taskTest);
 
   var taskStart = taskBasic.concat([
     'ts:app',
     'ngAnnotate',
     'browserify:example'
   ]);
-  grunt.registerTask('start', taskStart.concat(['restorePackage']));
+  grunt.registerTask('start', taskStart);
 
   var taskE2e = taskStart.concat([
     'babel',
     'espower:e2e',
     'mocha_istanbul:e2e'
   ]);
-  grunt.registerTask('e2e', taskE2e.concat(['restorePackage']));
+  grunt.registerTask('e2e', taskE2e);
 
   var taskBuild = taskBasic.concat([
     'ngAnnotate',
     'concat',
     'copy'
   ]);
-  grunt.registerTask('build', taskBuild.concat(['restorePackage']));
+  grunt.registerTask('build', taskBuild);
 };

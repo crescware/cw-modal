@@ -4,14 +4,13 @@
  * @copyright © 2015 Crescware
  * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/angularjs/angular.d.ts" />
 'use strict';
 
-var angular: ng.IAngularStatic = this.angular || require('angular');
-var Modal = this.Modal || require('./modal').Modal;
+import angular = require('angular');
+import m = require('./modal');
+import Modal = m.Modal;
 
-class Dialog {
+export class Dialog {
   data: any;
   template: ng.IPromise<string>;
   width: number;
@@ -101,5 +100,3 @@ class Dialog {
 }
 
 angular.module(Modal.moduleName).factory('Dialog', () => Dialog);
-
-this.Dialog = Dialog;

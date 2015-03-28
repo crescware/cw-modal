@@ -4,16 +4,14 @@
  * @copyright © 2015 Crescware
  * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../api/cw-modal.d.ts" />
+/// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/node/node.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
 
-import importCwModal = require('cw-modal');
-import cw = importCwModal;
-
-var angular: ng.IAngularStatic = this.angular || require('angular');
+import cw = require('cw-modal');
+import angular = require('angular');
 
 interface ModalElement {
   element: JQuery;
@@ -21,7 +19,7 @@ interface ModalElement {
   zIndex: number;
 }
 
-class Modal {
+export class Modal {
   static moduleName = 'cwModal';
   dialog: cw.DialogInstance<any>;
 
@@ -187,5 +185,3 @@ function ModalDDO() {
 
 angular.module(Modal.moduleName, []);
 angular.module(Modal.moduleName).directive(Modal.moduleName, ModalDDO);
-
-this.Modal = Modal;
