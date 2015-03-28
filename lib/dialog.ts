@@ -7,6 +7,7 @@
 'use strict';
 
 import angular = require('angular');
+import jquery = require('jquery');
 import m = require('./modal');
 import Modal = m.Modal;
 
@@ -16,7 +17,7 @@ export class Dialog {
   width: number;
   dialogUuid: string;
 
-  private rootElement: ng.IAugmentedJQuery;
+  private rootElement: Node;
   private $rootScope: ng.IRootScopeService;
 
   /**
@@ -29,8 +30,8 @@ export class Dialog {
     }
 
     // Priority
-    this.rootElement = <ng.IAugmentedJQuery>angular.element('.ng-scope').eq(0);
-    this.$rootScope = this.rootElement.scope();
+    this.rootElement = document.querySelectorAll('.ng-scope')[0];
+    this.$rootScope = angular.element(this.rootElement).scope();
 
     this.template = this.extractTemplate(dialogDefinition);
     this.width = dialogDefinition.width;
@@ -45,7 +46,7 @@ export class Dialog {
    * @returns {ng.IPromise<string>}
    */
   private extractTemplate(dialogDefinition: any): ng.IPromise<string> {
-    var $injector: ng.auto.IInjectorService = this.rootElement.injector();
+    var $injector: ng.auto.IInjectorService = angular.element(this.rootElement).injector();
     var $q: ng.IQService = $injector.get('$q');
 
     return new $q<string>((resolve, reject) => {

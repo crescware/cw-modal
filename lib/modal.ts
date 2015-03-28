@@ -12,6 +12,7 @@
 
 import cw = require('cw-modal');
 import angular = require('angular');
+import jquery = require('jquery');
 
 interface ModalElement {
   element: JQuery;
@@ -49,6 +50,7 @@ export class Modal {
    * @returns {void}
    */
   private onOpen(_: ng.IAngularEvent, dialog: cw.DialogInstance<any>) {
+    console.log('onOpen');
     this.dialog = dialog;
     this.$element.html('');
 
@@ -56,17 +58,21 @@ export class Modal {
     var display = this.createModalDisplay(backdrop.zIndex);
     var dialogRect = this.createDialogRect(display.zIndex);
 
-    this.$element.append(backdrop.element).append(display.element);
-    angular.element('#'+display.id)
+    this.$element
+      .append(backdrop.element)
+      .append(display.element);
+
+    jquery('#'+display.id)
       .append(dialogRect.element)
       .on('click', (event: JQueryEventObject) => {
+        console.log('#'+display.id+' click');
         event.stopPropagation();
         dialog.close(event);
       });
 
     dialog.template.then((template: string) => {
-      var templateEl = angular.element(template);
-      angular.element('#'+dialogRect.id)
+      var templateEl = jquery(template);
+      jquery('#'+dialogRect.id)
         .append(template)
         .on('click', (event: JQueryEventObject) => {
           event.stopPropagation();
@@ -93,7 +99,7 @@ export class Modal {
    * @returns {ModalElement}
    */
   private createModalBackdrop(): ModalElement {
-    var element = angular.element('<div></div>');
+    var element = jquery('<div></div>');
     var id = 'cw-modal-backdrop';
     var zIndex = 1040;
 
@@ -120,7 +126,7 @@ export class Modal {
    * @returns {ModalElement}
    */
   private createModalDisplay(backZIndex: number): ModalElement {
-    var element = angular.element('<div></div>');
+    var element = jquery('<div></div>');
     var id = 'cw-modal-display';
     var zIndex = backZIndex + 10;
 
@@ -146,7 +152,7 @@ export class Modal {
    * @returns {ModalElement}
    */
   private createDialogRect(backZIndex: number): ModalElement {
-    var element = angular.element('<div></div>');
+    var element = jquery('<div></div>');
     var id = 'cw-modal-dialog-rect';
     var zIndex = backZIndex + 10;
 
