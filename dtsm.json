@@ -16,6 +16,9 @@
     },
     "node/node.d.ts": {
       "ref": "be0b6b394f77a59e192ad7cfec18078706e44db5"
+    },
+    "bluebird/bluebird.d.ts": {
+      "ref": "be0b6b394f77a59e192ad7cfec18078706e44db5"
     }
   }
 }
