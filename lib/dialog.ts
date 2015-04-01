@@ -7,7 +7,6 @@
 'use strict';
 
 import angular = require('angular');
-import jquery = require('jquery');
 import Promise = require('bluebird');
 import m = require('./modal');
 import Modal = m.Modal;
@@ -99,5 +98,3 @@ export class Dialog<T> {
     this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
   }
 }
-
-angular.module(Modal.moduleName).factory('Dialog', () => Dialog);
