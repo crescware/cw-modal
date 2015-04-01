@@ -10,6 +10,7 @@ import angular = require('angular');
 import Promise = require('bluebird');
 import m = require('./modal');
 import Modal = m.Modal;
+import emitter = m.emitter;
 
 export class Dialog<T> {
   data: T;
@@ -17,8 +18,10 @@ export class Dialog<T> {
   width: number;
   dialogUuid: string;
 
-  private rootElement: Node;
   private $rootScope: ng.IRootScopeService;
+  private onCloseHandler: (...args: any[]) => void;
+  private onKeyDownHandler: (keyEvent: KeyboardEvent) => void;
+  private rootElement: Node;
 
   /**
    * @constructor
@@ -49,36 +52,39 @@ export class Dialog<T> {
     var $injector: ng.auto.IInjectorService = angular.element(this.rootElement).injector();
 
     return new Promise<string>((resolve, reject) => {
-      if (dialogDefinition.templateUrl) {
-        var url = dialogDefinition.templateUrl;
-
-        var $templateCache: ng.ITemplateCacheService = $injector.get('$templateCache');
-        var cache = $templateCache.get(url)[1];
-        if (cache) {
-          return resolve(cache);
-        }
-
-        var $http: ng.IHttpService = $injector.get('$http');
-        $http.get(url).success((template: Promise.Thenable<string>) => {
-          $templateCache.put(dialogDefinition.templateUrl, template);
-          return resolve(template);
-        });
+      if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
+        reject('Template not found.');
         return;
       }
-      if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
-        return reject('Template not found.');
+      if (!dialogDefinition.templateUrl) {
+        resolve(dialogDefinition.template);
+        return;
       }
-      return resolve(dialogDefinition.template);
+
+      var $templateCache: ng.ITemplateCacheService = $injector.get('$templateCache');
+      var url = dialogDefinition.templateUrl;
+
+      var cache = $templateCache.get(url)[1];
+      if (cache) {
+        resolve(cache);
+        return;
+      }
+
+      var $http: ng.IHttpService = $injector.get('$http');
+      $http.get(url).success((template: Promise.Thenable<string>) => {
+        $templateCache.put(dialogDefinition.templateUrl, template);
+        resolve(template);
+      });
     });
   }
 
   /**
-   * @param {*} data - Any data you want to use in the dialog
+   * @param {T} [data] - Any data you want to use in the dialog
    * @returns {string}
    */
-  open(data: any): string {
+  open(data?: T): string {
     this.data = data;
-    this.$rootScope.$broadcast('cwModal.Dialog#open', this);
+    emitter.emit('Dialog#open', this);
     return this.dialogUuid;
   }
 
@@ -87,14 +93,22 @@ export class Dialog<T> {
    * @returns {void}
    */
   close(event?: MouseEvent) {
-    this.$rootScope.$broadcast('cwModal.Dialog#close', event, this);
+    emitter.emit('Dialog#close', event, this);
   }
 
   /**
-   * @param {function} cb
+   * @param {function} listener
    * @returns {void}
    */
-  onClose(cb: (angularEvent: ng.IAngularEvent, event: MouseEvent, ...args: any[]) => any) {
-    this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
+  onClose(listener: (...args: any[]) => any) {
+    emitter.on(this.dialogUuid + '.onClose', listener);
+  }
+
+  /**
+   * @param {function} listener
+   * @returns {void}
+   */
+  onKeyDown(listener: (keyEvent: KeyboardEvent) => void) {
+    emitter.on(this.dialogUuid + '.onKeyDown', listener);
   }
 }

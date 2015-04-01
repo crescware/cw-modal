@@ -8,7 +8,8 @@
 import angular = require('angular');
 import cw = require('../../app');
 
-var Dialog = require('../../../../lib/dialog').Dialog;
+import d = require('../../../../lib/dialog');
+import Dialog = d.Dialog;
 
 export var directiveName = 'cwMain';
 
@@ -17,7 +18,7 @@ class Main {
    * @constructor
    */
   constructor() {
-    //
+    // noop
   }
 
   /**
@@ -30,6 +31,15 @@ class Main {
     });
     dialog.onClose(() => {
       console.log('#openDialog1().onClose()');
+    });
+    dialog.onKeyDown((e: KeyboardEvent) => {
+      console.log(e);
+      if (e.keyCode === 13/* enter */) {
+        dialog.close();
+      }
+      if (e.keyCode === 27/* esc */) {
+        dialog.close();
+      }
     });
     dialog.open({
       key1: 'foofoo',

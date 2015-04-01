@@ -11,9 +11,13 @@
 /// <reference path="dialog.ts" />
 'use strict';
 
-import cw = require('cw-modal');
 import angular = require('angular');
+import cw      = require('cw-modal');
+import events  = require('events');
 import Promise = require('bluebird');
+
+import EventEmitter = events.EventEmitter;
+export var emitter = new EventEmitter();
 
 interface ModalElement {
   element: JQuery;
@@ -50,16 +54,17 @@ export class Modal {
    */
   private init() {
     this.$scope.modalEnable = false;
-    this.$rootScope.$on('cwModal.Dialog#open',  this.onOpen.bind(this));
-    this.$rootScope.$on('cwModal.Dialog#close', this.onClose.bind(this));
+    emitter.on('Dialog#open',  this.onOpen.bind(this));
+    emitter.on('Dialog#close', this.onClose.bind(this));
   }
 
   /**
-   * @param {ng.IAngularEvent} _ - event non-use
    * @param {cw.DialogInstance} dialog
    * @returns {void}
    */
-  private onOpen(_: any, dialog: cw.DialogInstance<any>) {
+  private onOpen(dialog: cw.DialogInstance<any>) {
+    console.assert(!!dialog, 'Argument "dialog" is missing');
+    // Modal must be stored the dialog property to bind in Angular.
     this.dialog = dialog;
 
     // Loading DOM
@@ -70,12 +75,26 @@ export class Modal {
 
     // After load
     promise.then(() => {
-      document.getElementById('cw-modal-display')
-        .addEventListener('click', (event) => {
-          event.stopPropagation();
-          this.dialog.close(event);
-        });
-      return this.dialog.template;
+      (() => {
+        // Remove focus from clicked button
+        var id = 'cw-modal-dummy-input';
+        var el = document.createElement('input');
+        el.setAttribute('id', id);
+        document.getElementsByTagName('body')[0].appendChild(el);
+        var input = document.getElementById(id);
+        input.focus();
+        document.getElementsByTagName('body')[0].removeChild(input);
+      })();
+
+      var el = document.getElementById('cw-modal-display');
+      el.addEventListener('click', (event) => {
+        event.stopPropagation();
+        dialog.close(event);
+      });
+      document.onkeydown = (event: KeyboardEvent) => {
+        emitter.emit(dialog.dialogUuid + '.onKeyDown', event);
+      };
+      return dialog.template;
 
     }).then((template: string) => {
       var el = document.getElementById(ID_DRAWING_PART);
@@ -92,20 +111,21 @@ export class Modal {
   }
 
   /**
-   * @param {ng.IAngularEvent} _ non-use
-   * @param {JQueryEventObject} jQueryEvent
-   * @param {cw.DialogInstance} dialog
+   * @param {MouseEvent} event
+   * @param {cw.DialogInstance<any>} dialog
    * @returns {void}
    */
-  private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance<any>) {
+  private onClose(event: MouseEvent, dialog: cw.DialogInstance<any>) {
+    console.assert(!!dialog, 'Argument "dialog" is missing');
+
     // $timeout is required to apply changes of $scope.modalEnable
     this.$timeout(() => {
-      var el = document.getElementById(ID_DRAWING_PART);
-      el.innerHTML = '';
-
-      this.dialog = null;
+      document.getElementById(ID_DRAWING_PART).innerHTML = '';
+      document.onkeydown = () => {}; // noop
       this.$scope.modalEnable = false;
-      this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
+      this.dialog = null;
+
+      emitter.emit(dialog.dialogUuid + '.onClose', event);
     }, 0);
   }
 }
