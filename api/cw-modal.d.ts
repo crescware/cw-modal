@@ -26,7 +26,7 @@ declare module cw {
     dialogUuid: string;
     data: T;
     open(data: T): string;
-    close(event?: JQueryEventObject): void;
+    close(event?: MouseEvent): void;
     onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any): void;
   }
 }

@@ -84,10 +84,10 @@ export class Dialog<T> {
   }
 
   /**
-   * @param {JQueryEventObject} [event]
+   * @param {MouseEvent} [event]
    * @returns {void}
    */
-  close(event?: JQueryEventObject) {
+  close(event?: MouseEvent) {
     this.$rootScope.$broadcast('cwModal.Dialog#close', event, this);
   }
 
@@ -95,7 +95,7 @@ export class Dialog<T> {
    * @param {function} cb
    * @returns {void}
    */
-  onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any) {
+  onClose(cb: (angularEvent: ng.IAngularEvent, event: MouseEvent, ...args: any[]) => any) {
     this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
   }
 }

@@ -13,7 +13,6 @@
 
 import cw = require('cw-modal');
 import angular = require('angular');
-import jquery = require('jquery');
 import Promise = require('bluebird');
 
 interface ModalElement {
@@ -25,6 +24,8 @@ interface ModalElement {
 interface Scope extends ng.IScope {
   modalEnable: boolean;
 }
+
+var ID_DRAWING_PART = 'cw-modal-dialog-rect';
 
 export class Modal {
   static moduleName = 'cwModal';
@@ -69,19 +70,21 @@ export class Modal {
 
     // After load
     promise.then(() => {
-      jquery('#cw-modal-display')
-        .on('click', (event: JQueryEventObject) => {
+      document.getElementById('cw-modal-display')
+        .addEventListener('click', (event) => {
           event.stopPropagation();
           this.dialog.close(event);
         });
       return this.dialog.template;
 
     }).then((template: string) => {
-      jquery('#cw-modal-dialog-rect')
-        .html('')
-        .append(template)
-        .on('click', (event: JQueryEventObject) => event.stopPropagation());
-      this.$compile(jquery('#cw-modal-dialog-rect'))(this.$element.scope());
+      var el = document.getElementById(ID_DRAWING_PART);
+      el.innerHTML = template;
+      el.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+
+      this.$compile(el)(this.$element.scope());
 
     }).catch((err: string) => {
       throw Error(err);
@@ -97,7 +100,9 @@ export class Modal {
   private onClose(_: ng.IAngularEvent, jQueryEvent: JQueryEventObject, dialog: cw.DialogInstance<any>) {
     // $timeout is required to apply changes of $scope.modalEnable
     this.$timeout(() => {
-      jquery('#cw-modal-dialog-rect').html('');
+      var el = document.getElementById(ID_DRAWING_PART);
+      el.innerHTML = '';
+
       this.dialog = null;
       this.$scope.modalEnable = false;
       this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
@@ -109,7 +114,7 @@ var HTML = `
 <div ng-if="modalEnable">
   <div id="cw-modal-backdrop" style="z-index: 1040; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 0.5; background: rgb(51, 51, 51);"></div>
   <div id="cw-modal-display" style="z-index: 1050; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 1;">
-    <div id="cw-modal-dialog-rect" class="modal-content" style="z-index: 1060; width: 600px; margin: 100px auto;"></div>
+    <div id="${ID_DRAWING_PART}" class="modal-content" style="z-index: 1060; width: 600px; margin: 100px auto;"></div>
   </div>
 </div>
 `;
