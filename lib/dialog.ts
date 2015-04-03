@@ -5,13 +5,13 @@
  * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
 'use strict';
-
-import angular = require('angular');
-import m       = require('./modal');
+var angular: ng.IAngularStatic = (<any>window).angular || require('angular');
 import Promise = require('bluebird');
-
-import emitter = m.emitter;
-import Modal   = m.Modal;
+import m       = require('./modal');
+import angularModule = m.angularModule;
+import emitter       = m.emitter;
+import Modal         = m.Modal;
+import moduleName    = m.moduleName;
 
 export class Dialog<T> {
   data: T;
@@ -113,3 +113,5 @@ export class Dialog<T> {
     emitter.on(this.dialogUuid + '.onKeyDown', listener);
   }
 }
+
+angularModule.factory('Dialog', () => Dialog);
