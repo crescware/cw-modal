@@ -7,14 +7,15 @@
 'use strict';
 
 import angular = require('angular');
+import m       = require('./modal');
 import Promise = require('bluebird');
-import m = require('./modal');
-import Modal = m.Modal;
+
 import emitter = m.emitter;
+import Modal   = m.Modal;
 
 export class Dialog<T> {
   data: T;
-  template: ng.IPromise<string>;
+  template: Promise<string>;
   width: number;
   dialogUuid: string;
 
