@@ -32,15 +32,6 @@ class Main {
     dialog.onClose(() => {
       console.log('#openDialog1().onClose()');
     });
-    dialog.onKeyDown((e: KeyboardEvent) => {
-      console.log(e);
-      if (e.keyCode === 13/* enter */) {
-        dialog.close();
-      }
-      if (e.keyCode === 27/* esc */) {
-        dialog.close();
-      }
-    });
     dialog.open({
       key1: 'foofoo',
       key2: 'barbar'

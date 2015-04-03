@@ -27,7 +27,8 @@ declare module cw {
     data: T;
     open(data: T): string;
     close(event?: MouseEvent): void;
-    onClose(cb: (angularEvent: ng.IAngularEvent, jQueryEvent: JQueryEventObject, ...args: any[]) => any): void;
+    onClose(listener: (...args: any[]) => any): void;
+    onKeyDown(listener: (keyEvent: KeyboardEvent) => void): void;
   }
 }
 

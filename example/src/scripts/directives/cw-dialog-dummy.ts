@@ -39,6 +39,15 @@ function DialogDummyDDO() {
     require: '^cwModal',
     link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: cwModal.ModalProperty<{key1: string; key2: string}>) => {
       $scope.dialog = cwModal.dialog;
+      cwModal.dialog.onKeyDown((e: KeyboardEvent) => {
+        console.log(e);
+        if (e.keyCode === 13/* enter */) {
+          cwModal.dialog.close();
+        }
+        if (e.keyCode === 27/* esc */) {
+          cwModal.dialog.close();
+        }
+      });
     },
     controller: DialogDummyController,
     controllerAs: 'DialogDummy',
