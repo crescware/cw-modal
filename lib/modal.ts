@@ -64,6 +64,7 @@ export class Modal {
    */
   private onOpen(dialog: cw.DialogInstance<any>) {
     console.assert(!!dialog, 'Argument "dialog" is missing');
+
     // Modal must be stored the dialog property to bind in Angular.
     this.dialog = dialog;
 
@@ -76,14 +77,11 @@ export class Modal {
     // After load
     promise.then(() => {
       (() => {
-        // Remove focus from clicked button
-        var id = 'cw-modal-dummy-input';
+        // Remove a focus from the clicked button
         var el = document.createElement('input');
-        el.setAttribute('id', id);
-        document.getElementsByTagName('body')[0].appendChild(el);
-        var input = document.getElementById(id);
-        input.focus();
-        document.getElementsByTagName('body')[0].removeChild(input);
+        document.body.appendChild(el);
+        el.focus();
+        document.body.removeChild(el);
       })();
 
       var el = document.getElementById('cw-modal-display');
