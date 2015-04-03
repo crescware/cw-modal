@@ -30,9 +30,9 @@ interface Scope extends ng.IScope {
 }
 
 var ID_DRAWING_PART = 'cw-modal-dialog-rect';
+var MODULE_NAME = 'cwModal';
 
 export class Modal {
-  static moduleName = 'cwModal';
   dialog: cw.DialogInstance<any>;
 
   /**
@@ -152,5 +152,5 @@ function ddo() {
   };
 }
 
-angular.module(Modal.moduleName, []);
-angular.module(Modal.moduleName).directive(Modal.moduleName, ddo);
+angular.module(MODULE_NAME, []);
+angular.module(MODULE_NAME).directive(MODULE_NAME, ddo);
