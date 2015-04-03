@@ -16,23 +16,18 @@
 node_modules/
 npm-debug.log
 
-# for grunt
+# for gulp
 .tscache/
 coverage/
-doc/
+test-es5/
 test-espowered/
-typings/
-
-# for testium
-**/es5/
 test/log/
+typings/
 
 # TypeScript
 *.js
 *.js.map
 
-!example/lib/**/*.js
-!test/**/*.js
-!Gruntfile.js
+!gulpfile.js
 !index.js
 !dist/*
