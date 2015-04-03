@@ -19,12 +19,6 @@ import Promise = require('bluebird');
 import EventEmitter = events.EventEmitter;
 export var emitter = new EventEmitter();
 
-interface ModalElement {
-  element: JQuery;
-  id: string;
-  zIndex: number;
-}
-
 interface Scope extends ng.IScope {
   modalEnable: boolean;
 }
