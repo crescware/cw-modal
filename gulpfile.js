@@ -8,6 +8,7 @@ var shell = require('gulp-shell');
 
 var opt = {
   example:       './example',
+  bundle:        '/src/bundle.js',
   lib:           './lib',
   test:          './test',
   testEs5:       './test-es5',
@@ -15,6 +16,9 @@ var opt = {
 };
 
 /* clean */
+gulp.task('clean:bundle', del.bind(null, [
+  opt.example + opt.bundle
+]));
 gulp.task('clean', del.bind(null, [
   opt.example + '/**/*.js',
   opt.example + '/**/*.js.map',
@@ -49,7 +53,7 @@ function globToBrowserify(bundler) {
       });
     });
     p.then(function(names) {
-      shell.task([`${bundler} ${names} -o ${opt.example}/src/bundle.js ${verbose}`])();
+      shell.task([`${bundler} ${names} -o ${opt.example}${opt.bundle} ${verbose}`])();
       done();
     });
   };
@@ -62,8 +66,9 @@ gulp.task('watchify',   function(done) {seq('ts', 'babel', 'watchify_', done)});
 gulp.task('browserify', function(done) {seq('ts', 'babel', 'browserify_', done)});
 
 /* watch */
-gulp.task('watch', ['watchify', 'ts'], function() {
-  gulp.watch([`${opt.example}/**/*.ts`, `${opt.lib}/**/*.ts`], ['ts']);
+gulp.task('watch:js', function(done) {seq('clean:bundle', ['ts:example_', 'ts:lib_'], 'babel', done)});
+gulp.task('watch', ['watchify', 'watch:js'], function() {
+  gulp.watch([`${opt.example}/**/*.ts`, `${opt.lib}/**/*.ts`], ['watch:js']);
 });
 
 /* build */
