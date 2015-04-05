@@ -10,11 +10,11 @@ import cw = require('../../app');
 
 export var directiveName = 'cwScreenMain';
 
-function ScreenMainDDO() {
+function ddo() {
   return {
     restrict: 'E',
     templateUrl: 'src/views/cw-screen-main.html'
-  }
+  };
 }
 
-angular.module(cw.appName).directive(directiveName, ScreenMainDDO);
+angular.module(cw.appName).directive(directiveName, ddo);

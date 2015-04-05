@@ -13,7 +13,7 @@ import Dialog = d.Dialog;
 
 export var directiveName = 'cwMain';
 
-class Main {
+class Controller {
   /**
    * @constructor
    */
@@ -53,13 +53,13 @@ class Main {
   }
 }
 
-function MainDDO() {
+function ddo() {
   return {
+    controller: Controller,
+    controllerAs: 'Controller',
     restrict: 'E',
-    templateUrl: 'src/views/cw-main.html',
-    controller: Main,
-    controllerAs: 'Main'
-  }
+    templateUrl: 'src/views/cw-main.html'
+  };
 }
 
-angular.module(cw.appName).directive(directiveName, MainDDO);
+angular.module(cw.appName).directive(directiveName, ddo);

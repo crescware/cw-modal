@@ -10,11 +10,11 @@ import cw = require('../../app');
 
 export var directiveName = 'cwFooter';
 
-function FooterDDO() {
+function ddo() {
   return {
     restrict: 'E',
     templateUrl: 'src/views/cw-footer.html'
-  }
+  };
 }
 
-angular.module(cw.appName).directive(directiveName, FooterDDO);
+angular.module(cw.appName).directive(directiveName, ddo);

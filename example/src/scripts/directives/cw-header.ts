@@ -10,11 +10,11 @@ import cw = require('../../app');
 
 export var directiveName = 'cwHeader';
 
-function HeaderDDO() {
+function ddo() {
   return {
     restrict: 'E',
     templateUrl: 'src/views/cw-header.html'
-  }
+  };
 }
 
-angular.module(cw.appName).directive(directiveName, HeaderDDO);
+angular.module(cw.appName).directive(directiveName, ddo);
