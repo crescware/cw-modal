@@ -4,11 +4,12 @@
  * @copyright © 2015 Crescware
  * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/angularjs/angular.d.ts" />
 'use strict';
-var angular = this.angular || require('angular');
-var Modal = this.Modal || require('./modal').Modal;
+var angular = window.angular || require('angular');
+var Promise = require('bluebird');
+var m = require('./modal');
+var angularModule = m.angularModule;
+var emitter = m.emitter;
 var Dialog = (function () {
     /**
      * @constructor
@@ -19,67 +20,78 @@ var Dialog = (function () {
             delete dialogDefinition.templateUrl;
         }
         // Priority
-        this.rootElement = angular.element('.ng-scope').eq(0);
-        this.$rootScope = this.rootElement.scope();
+        this.rootElement = document.querySelectorAll('.ng-scope')[0];
+        this.$rootScope = angular.element(this.rootElement).scope();
         this.template = this.extractTemplate(dialogDefinition);
         this.width = dialogDefinition.width;
         this.dialogUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            var r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : r & 3 | 8;
             return v.toString(16);
         });
     }
     /**
      * @param {*} dialogDefinition
-     * @returns {ng.IPromise<string>}
+     * @returns {Promise<string>}
      */
     Dialog.prototype.extractTemplate = function (dialogDefinition) {
-        var $injector = this.rootElement.injector();
-        var $q = $injector.get('$q');
-        return new $q(function (resolve, reject) {
-            if (dialogDefinition.templateUrl) {
-                var url = dialogDefinition.templateUrl;
-                var $templateCache = $injector.get('$templateCache');
-                var cache = $templateCache.get(url)[1];
-                if (cache) {
-                    return resolve(cache);
-                }
-                var $http = $injector.get('$http');
-                $http.get(url).success(function (template) {
-                    $templateCache.put(dialogDefinition.templateUrl, template);
-                    return resolve(template);
-                });
+        var $injector = angular.element(this.rootElement).injector();
+        return new Promise(function (resolve, reject) {
+            if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
+                reject('Template not found.');
                 return;
             }
-            if (!dialogDefinition.templateUrl && !dialogDefinition.template) {
-                return reject('Template not found.');
+            if (!dialogDefinition.templateUrl) {
+                resolve(dialogDefinition.template);
+                return;
             }
-            return resolve(dialogDefinition.template);
+            var $templateCache = $injector.get('$templateCache');
+            var url = dialogDefinition.templateUrl;
+            var cache = $templateCache.get(url)[1];
+            if (cache) {
+                resolve(cache);
+                return;
+            }
+            var $http = $injector.get('$http');
+            $http.get(url).success(function (template) {
+                $templateCache.put(dialogDefinition.templateUrl, template);
+                resolve(template);
+            });
         });
     };
     /**
-     * @param {*} data - Any data you want to use in the dialog
+     * @param {T} [data] - Any data you want to use in the dialog
      * @returns {string}
      */
     Dialog.prototype.open = function (data) {
         this.data = data;
-        this.$rootScope.$broadcast('cwModal.Dialog#open', this);
+        emitter.emit('Dialog#open', this);
         return this.dialogUuid;
     };
     /**
-     * @param {JQueryEventObject} [event]
+     * @param {MouseEvent} [event]
      * @returns {void}
      */
     Dialog.prototype.close = function (event) {
-        this.$rootScope.$broadcast('cwModal.Dialog#close', event, this);
+        emitter.emit('Dialog#close', event, this);
     };
     /**
-     * @param {function} cb
+     * @param {function} listener
      * @returns {void}
      */
-    Dialog.prototype.onClose = function (cb) {
-        this.$rootScope.$on(this.dialogUuid + '.onClose', cb);
+    Dialog.prototype.onClose = function (listener) {
+        emitter.on(this.dialogUuid + '.onClose', listener);
+    };
+    /**
+     * @param {function} listener
+     * @returns {void}
+     */
+    Dialog.prototype.onKeyDown = function (listener) {
+        emitter.on(this.dialogUuid + '.onKeyDown', listener);
     };
     return Dialog;
 })();
-angular.module(Modal.moduleName).factory('Dialog', function () { return Dialog; });
-this.Dialog = Dialog;
+exports.Dialog = Dialog;
+angularModule.factory('Dialog', function () {
+    return Dialog;
+});

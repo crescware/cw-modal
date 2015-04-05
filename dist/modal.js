@@ -4,154 +4,117 @@
  * @copyright © 2015 Crescware
  * @since cw-modal v 0.0.1 (Feb 8, 2015)
  */
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../api/cw-modal.d.ts" />
+/// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/bluebird/bluebird.d.ts" />
+/// <reference path="../typings/node/node.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
-var angular = this.angular || require('angular');
+var angular = window.angular || require('angular');
+var events = require('events');
+var Promise = require('bluebird');
+var EventEmitter = events.EventEmitter;
+exports.emitter = new EventEmitter();
+exports.moduleName = 'cwModal';
+var ID_DRAWING_PART = 'cw-modal-dialog-rect';
 var Modal = (function () {
     /**
      * @constructor
      * @ngInject
      */
-    function Modal($rootScope, $element, $compile) {
+    function Modal($rootScope, $element, $compile, $scope, $timeout) {
         this.$rootScope = $rootScope;
         this.$element = $element;
         this.$compile = $compile;
+        this.$scope = $scope;
+        this.$timeout = $timeout;
         this.init();
     }
-    Modal.$inject = ['$rootScope', '$element', '$compile'];
     /**
      * @returns {void}
      */
     Modal.prototype.init = function () {
-        this.$rootScope.$on('cwModal.Dialog#open', this.onOpen.bind(this));
-        this.$rootScope.$on('cwModal.Dialog#close', this.onClose.bind(this));
+        this.$scope.modalEnable = false;
+        exports.emitter.on('Dialog#open', this.onOpen.bind(this));
+        exports.emitter.on('Dialog#close', this.onClose.bind(this));
     };
     /**
-     * @param {ng.IAngularEvent} _ non-use
      * @param {cw.DialogInstance} dialog
      * @returns {void}
      */
-    Modal.prototype.onOpen = function (_, dialog) {
+    Modal.prototype.onOpen = function (dialog) {
         var _this = this;
+        console.assert(!!dialog, 'Argument "dialog" is missing');
+        // Modal must be stored the dialog property to bind in Angular.
         this.dialog = dialog;
-        this.$element.html('');
-        var backdrop = this.createModalBackdrop();
-        var display = this.createModalDisplay(backdrop.zIndex);
-        var dialogRect = this.createDialogRect(display.zIndex);
-        this.$element.append(backdrop.element).append(display.element);
-        angular.element('#' + display.id).append(dialogRect.element).on('click', function (event) {
-            event.stopPropagation();
-            dialog.close(event);
+        // Loading DOM
+        this.$scope.modalEnable = true;
+        var promise = new Promise(function (resolve) {
+            _this.$timeout(function () {
+                return resolve(void 0);
+            }, 0);
         });
-        dialog.template.then(function (template) {
-            var templateEl = angular.element(template);
-            angular.element('#' + dialogRect.id).append(template).on('click', function (event) {
+        // After load
+        promise.then(function () {
+            (function () {
+                // Remove a focus from the clicked button
+                var el = document.createElement('input');
+                document.body.appendChild(el);
+                el.focus();
+                document.body.removeChild(el);
+            })();
+            var el = document.getElementById('cw-modal-display');
+            el.addEventListener('click', function (event) {
+                event.stopPropagation();
+                dialog.close(event);
+            });
+            document.onkeydown = function (event) {
+                exports.emitter.emit(dialog.dialogUuid + '.onKeyDown', event);
+            };
+            return dialog.template;
+        }).then(function (template) {
+            var el = document.getElementById(ID_DRAWING_PART);
+            el.innerHTML = template;
+            el.addEventListener('click', function (event) {
                 event.stopPropagation();
             });
-            _this.$compile(_this.$element.contents())(_this.$element.scope());
-        }).catch(function (err) {
+            _this.$compile(el)(_this.$element.scope());
+        })['catch'](function (err) {
             throw Error(err);
         });
     };
     /**
-     * @param {ng.IAngularEvent} _ non-use
-     * @param {JQueryEventObject} jQueryEvent
-     * @param {cw.DialogInstance} dialog
+     * @param {MouseEvent} event
+     * @param {cw.DialogInstance<any>} dialog
      * @returns {void}
      */
-    Modal.prototype.onClose = function (_, jQueryEvent, dialog) {
-        this.$element.html('');
-        this.dialog = null;
-        this.$rootScope.$broadcast(dialog.dialogUuid + '.onClose', jQueryEvent);
+    Modal.prototype.onClose = function (event, dialog) {
+        var _this = this;
+        console.assert(!!dialog, 'Argument "dialog" is missing');
+        // $timeout is required to apply changes of $scope.modalEnable
+        this.$timeout(function () {
+            document.getElementById(ID_DRAWING_PART).innerHTML = '';
+            document.onkeydown = function () {}; // noop
+            _this.$scope.modalEnable = false;
+            _this.dialog = null;
+            exports.emitter.emit(dialog.dialogUuid + '.onClose', event);
+        }, 0);
     };
-    /**
-     * @returns {ModalElement}
-     */
-    Modal.prototype.createModalBackdrop = function () {
-        var element = angular.element('<div></div>');
-        var id = 'cw-modal-backdrop';
-        var zIndex = 1040;
-        element.attr({ id: id });
-        element.css({
-            'z-index': zIndex,
-            position: 'fixed',
-            top: 0,
-            width: '100%',
-            height: '100%',
-            background: '#333',
-            opacity: 0.5
-        });
-        return {
-            element: element,
-            id: id,
-            zIndex: zIndex
-        };
-    };
-    /**
-     * @param {number} backZIndex
-     * @returns {ModalElement}
-     */
-    Modal.prototype.createModalDisplay = function (backZIndex) {
-        var element = angular.element('<div></div>');
-        var id = 'cw-modal-display';
-        var zIndex = backZIndex + 10;
-        element.attr({ id: id });
-        element.css({
-            'z-index': zIndex,
-            position: 'fixed',
-            top: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 1
-        });
-        return {
-            element: element,
-            id: id,
-            zIndex: zIndex
-        };
-    };
-    /**
-     * @param {number} backZIndex
-     * @returns {ModalElement}
-     */
-    Modal.prototype.createDialogRect = function (backZIndex) {
-        var element = angular.element('<div></div>');
-        var id = 'cw-modal-dialog-rect';
-        var zIndex = backZIndex + 10;
-        var width = this.dialog.width || 900;
-        element.attr({
-            id: id,
-            'class': 'modal-content'
-        });
-        element.css({
-            'z-index': zIndex,
-            width: width + 'px',
-            margin: '100px auto'
-        });
-        return {
-            element: element,
-            id: id,
-            zIndex: zIndex
-        };
-    };
-    Modal.moduleName = 'cwModal';
     return Modal;
 })();
+exports.Modal = Modal;
+var HTML = '\n<div ng-if="modalEnable">\n  <div id="cw-modal-backdrop" style="z-index: 1040; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 0.5; background: rgb(51, 51, 51);"></div>\n  <div id="cw-modal-display" style="z-index: 1050; position: fixed; top: 0px; width: 100%; height: 100%; opacity: 1;">\n    <div id="' + ID_DRAWING_PART + '" class="modal-content" style="z-index: 1060; width: 600px; margin: 100px auto;"></div>\n  </div>\n</div>\n';
 /**
  * @constructor
  */
-function ModalDDO() {
+function ddo() {
     return {
-        restrict: 'E',
-        template: '',
         controller: Modal,
         controllerAs: 'Modal',
-        scope: {}
+        restrict: 'E',
+        scope: {},
+        template: HTML
     };
 }
-angular.module(Modal.moduleName, []);
-angular.module(Modal.moduleName).directive(Modal.moduleName, ModalDDO);
-this.Modal = Modal;
+exports.angularModule = angular.module(exports.moduleName, []);
+exports.angularModule.directive(exports.moduleName, ddo);
