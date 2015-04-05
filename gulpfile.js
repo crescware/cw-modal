@@ -7,6 +7,7 @@ var seq = require('run-sequence');
 var shell = require('gulp-shell');
 
 var opt = {
+  dist:          './dist',
   example:       './example',
   bundle:        '/src/bundle.js',
   lib:           './lib',
@@ -18,6 +19,9 @@ var opt = {
 /* clean */
 gulp.task('clean:bundle', del.bind(null, [
   opt.example + opt.bundle
+]));
+gulp.task('clean:dist', del.bind(null, [
+  opt.dist
 ]));
 gulp.task('clean', del.bind(null, [
   opt.example + '/**/*.js',
@@ -72,8 +76,13 @@ gulp.task('watch', ['watchify', 'watch:js'], function() {
 });
 
 /* build */
-gulp.task('build_', shell.task([`find ${opt.lib} -name *.js | xargs browserify --exclude angular --standalone CwModal > bundle.js`]));
-gulp.task('build', function(done) {seq('ts:lib', 'babel:lib', 'build_', done)});
+gulp.task('copy:lib', function() {
+  gulp.src(`${opt.lib}/**/*.js`)
+    .pipe(gulp.dest(opt.dist));
+});
+gulp.task('build:browser', shell.task([`find ${opt.lib} -name '*.js' | xargs browserify --exclude angular --standalone CwModal > ${opt.dist}/bundle.js`]));
+gulp.task('build:lib', function(done) {seq(['clean:dist', 'ts:lib'], 'babel:lib', 'copy:lib', done)});
+gulp.task('build',     function(done) {seq('build:lib', 'build:browser', done)});
 
 /* test */
 gulp.task('espower', function() {
