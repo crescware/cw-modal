@@ -10,21 +10,20 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="dialog.ts" />
 'use strict';
-
-import angular = require('angular');
+var angular: ng.IAngularStatic = (<any>window).angular || require('angular');
 import cw      = require('cw-modal');
 import events  = require('events');
 import Promise = require('bluebird');
 
 import EventEmitter = events.EventEmitter;
 export var emitter = new EventEmitter();
+export var moduleName = 'cwModal';
+
+var ID_DRAWING_PART = 'cw-modal-dialog-rect';
 
 interface Scope extends ng.IScope {
   modalEnable: boolean;
 }
-
-var ID_DRAWING_PART = 'cw-modal-dialog-rect';
-var MODULE_NAME = 'cwModal';
 
 export class Modal {
   dialog: cw.DialogInstance<any>;
@@ -144,5 +143,5 @@ function ddo() {
   };
 }
 
-angular.module(MODULE_NAME, []);
-angular.module(MODULE_NAME).directive(MODULE_NAME, ddo);
+export var angularModule = angular.module(moduleName, []);
+angularModule.directive(moduleName, ddo);
