@@ -12,19 +12,19 @@ import cwModal = require('cw-modal');
 
 export var directiveName = 'cwDialogDummy';
 
-interface DialogDummyControllerScope extends ng.IScope {
+interface Scope extends ng.IScope {
   dialog: cwModal.DialogInstance<{key1: string; key2: string}>;
 }
 
-class DialogDummyController {
+class Controller {
   /**
    * @constructor
    * @ngInject
    */
   constructor(
-    private $scope: DialogDummyControllerScope
+    private $scope: Scope
   ) {
-    console.time('T');
+    // noop
   }
 
   close() {
@@ -32,27 +32,30 @@ class DialogDummyController {
   }
 }
 
-function DialogDummyDDO() {
-  return {
-    restrict: 'E',
-    templateUrl: 'src/views/cw-dialog-dummy.html',
-    require: '^cwModal',
-    link: ($scope: DialogDummyControllerScope, _: any, __: any, cwModal: cwModal.ModalProperty<{key1: string; key2: string}>) => {
-      $scope.dialog = cwModal.dialog;
-      cwModal.dialog.onKeyDown((e: KeyboardEvent) => {
-        console.log(e);
-        if (e.keyCode === 13/* enter */) {
-          cwModal.dialog.close();
-        }
-        if (e.keyCode === 27/* esc */) {
-          cwModal.dialog.close();
-        }
-      });
-    },
-    controller: DialogDummyController,
-    controllerAs: 'DialogDummy',
-    scope: {}
-  }
+declare var typeModal: cwModal.ModalProperty<{key1: string; key2: string}>;
+function link($scope: Scope, _: any, __: any, cwModal: typeof typeModal) {
+  $scope.dialog = cwModal.dialog;
+  cwModal.dialog.onKeyDown((e: KeyboardEvent) => {
+    console.log(e);
+    if (e.keyCode === 13/* enter */) {
+      cwModal.dialog.close();
+    }
+    if (e.keyCode === 27/* esc */) {
+      cwModal.dialog.close();
+    }
+  });
 }
 
-angular.module(app.appName).directive(directiveName, DialogDummyDDO);
+function ddo() {
+  return {
+    controller: Controller,
+    controllerAs: 'DialogDummy',
+    link: link,
+    require: '^cwModal',
+    restrict: 'E',
+    scope: {},
+    templateUrl: 'src/views/cw-dialog-dummy.html'
+  };
+}
+
+angular.module(app.appName).directive(directiveName, ddo);
