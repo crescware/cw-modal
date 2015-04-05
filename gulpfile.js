@@ -53,7 +53,7 @@ function globToBrowserify(bundler) {
       });
     });
     p.then(function(names) {
-      shell.task([`${bundler} ${names} -o ${opt.example}${opt.bundle} ${verbose}`])();
+      shell.task([`${bundler} ${names} -p licensify > ${opt.example}${opt.bundle} ${verbose}`])();
       done();
     });
   };
@@ -66,7 +66,7 @@ gulp.task('watchify',   function(done) {seq('ts', 'babel', 'watchify_', done)});
 gulp.task('browserify', function(done) {seq('ts', 'babel', 'browserify_', done)});
 
 /* watch */
-gulp.task('watch:js', function(done) {seq('clean:bundle', ['ts:example_', 'ts:lib_'], 'babel', done)});
+gulp.task('watch:js', function(done) {seq('clean:bundle', ['ts:example_', 'ts:lib_'], ['babel:example', 'babel:lib'], done)});
 gulp.task('watch', ['watchify', 'watch:js'], function() {
   gulp.watch([`${opt.example}/**/*.ts`, `${opt.lib}/**/*.ts`], ['watch:js']);
 });
